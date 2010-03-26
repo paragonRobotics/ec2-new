@@ -14,10 +14,9 @@ void c2_disconnect_target( EC2DRV *obj );
 uint16_t c2_device_id( EC2DRV *obj );
 uint16_t c2_unique_device_id( EC2DRV *obj );
 void c2_erase_flash( EC2DRV *obj );
-BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len );
-BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
-							BOOL scratchpad );
-BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len );
+BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOOL scratchpad );
+BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr, BOOL scratchpad );
+BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOOL scratchpad );
 void ec2_read_xdata_c2_emif( EC2DRV *obj, char *buf, int start_addr, int len );
 BOOL ec2_write_xdata_c2_emif( EC2DRV *obj, char *buf, int start_addr, int len );
 void c2_read_ram( EC2DRV *obj, char *buf, int start_addr, int len );

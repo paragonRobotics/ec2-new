@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
 #include "target.h"
 #include "ihex.h"
 
@@ -59,7 +60,8 @@ bool Target::load_file( string name )
 {
 	uint16_t start, end;
 	char *buf = new char[0x10000];
-	memset(buf,0x00,0x10000);
+	// set all data to 0xff, since this is the default erased value for flash
+	memset(buf,0xff,0x10000);
 	cout << "Loading file '"<<name<<"'"<<endl;
 	if( buf && ihex_load_file( name.c_str(), buf, &start, &end) )
 	{

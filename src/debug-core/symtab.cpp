@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <iostream>
+#include <stdio.h>
 #include "symtab.h"
 #include "module.h"
 
@@ -411,7 +412,7 @@ int SymTab::file_id(string filename)
 	int i=0;
 	while( i<file_map.size() )
 	{
-		cout<<i<<" = ["<<file_map[i]<<"]"<<endl;
+		//cout<<i<<" = ["<<file_map[i]<<"]"<<endl;
 		if( file_map[i]==filename )
 			return i;
 		i++;

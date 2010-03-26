@@ -1142,91 +1142,59 @@ BOOL jtag_write_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	DUMP_FUNC();
 	int i;
 	char cmd[5];
+	char extraValues[2],endByte;
+	
 	assert(obj->mode==JTAG);
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F120, C8051F133 ))
-		trx(obj,"\x03\x02\x2E\x01",4,"\x0D",1);		// preamble
+	
+	// if write length is odd, go ahead and read last byte before we even
+	//  start reading, since reading data in the middle of a write causes
+	//  problems
+	if (len % 2) {
+		ec2_read_xdata( obj, &extraValues[0], (page<<8)+len+start-1, 2 );
+		endByte = extraValues[1];
+	}
+	
+	// start writing to XDATA now
+	// write preamble
+	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+		trx(obj,"\x03\x02\x2D\x01",4,"\x0D",1);
 	else
-		trx(obj,"\x03\x02\x2D\x01",4,"\x0D",1);		// preamble
+		trx(obj,"\x03\x02\x2E\x01",4,"\x0D",1);
 	
 	// select page
 	cmd[0] = 0x03;
 	cmd[1] = 0x02;
-	//cmd[2] = 0x32;
-	// TODO: why a different number between the F020 and F120?  is this some register?
-	//		is this different for other processors?
+
 	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
-		cmd[2] = 0x32;	// F020 Value
+		cmd[2] = 0x32;
 	else
-		cmd[2] = 0x31;	// F120 value
+		cmd[2] = 0x31;
+
 	cmd[3] = page;
 	trx( obj, (char*)cmd, 4, "\x0D", 1 );
 	
-	// write bytes to page
-	// up to 2 at a time
+	// set constant values
+	cmd[0] = 0x07;
+	cmd[2] = 2;	// length
 	for( i=0; i<len; i+=2 )
 	{
-		if( (len-i) > 1 )
-		{
-			cmd[0] = 0x07;
-			cmd[1] = i+start;
-			cmd[2] = 2;
-			cmd[3] = (char)buf[i];
-			cmd[4] = (char)buf[i+1];
-			trx( obj, (char*)cmd, 5, "\x0d", 1 );
+		// write position
+		cmd[1] = i+start;
+		// write new values
+		cmd[3] = (char)buf[i];
+		cmd[4] = (char)buf[i+1];
+		// if it's the last byte, and it's odd, fill in the old
+		//  read value for the last byte to even it out
+		if( (len-i) <= 1 ) {
+			cmd[4] = endByte;
 		}
-		else
-		{
-#if 0
-			// single byte write
-			// although the EC2 responds correctly to 1 byte writes the SI labs
-			// ide dosen't use them and attempting to use them does not cause a
-			// write.  We fake a single byte write by reading in the byte that
-			// will be overwitten and rewrite it 
-			ec2_read_xdata( obj, &cmd[3], (page<<8)+i+start, 2 );
-			cmd[0] = 0x07;
-			cmd[1] = i+start;
-			cmd[2] = 2;								// length
-			cmd[3] = (char)buf[i];					// overwrite first byte
-			trx( obj, (char*)cmd, 5, "\x0d", 1 );	// test
-#else
-			// find even address for start
-			if( start&0x01 )
-{
-				//printf("odd\n");
-				// odd addr
-	cmd[0] = 0x07;
-	cmd[1] = i+start-1;
-	cmd[2] = 2;								// length
-				// read byte before
-	ec2_read_xdata( obj, &cmd[3], (page<<8)+i+start-1, 2 );
-				//usleep(100000);
-				//print_buf( &cmd[3],2);
-	cmd[4] = buf[i];	// overwrite second byte
-				//print_buf( &cmd[3],2);
-	trx( obj, (char*)cmd, 5, "\x0d", 1 );	// test
-}
-			else
-{
-				//printf("even\n");
-				// even
-	cmd[0] = 0x07;
-	cmd[1] = i+start;
-	cmd[2] = 2;								// length
-				// read byte before
-				//printf("reading addr=0x%04x\n",(page<<8)+i+start);
-	ec2_read_xdata( obj, &cmd[3], (page<<8)+i+start, 2 );
-				//print_buf( &cmd[3],2);
-				//usleep(100000);
-	cmd[3] = buf[i];	// overwrite first byte
-				//print_buf( &cmd[3],2);
-	trx( obj, (char*)cmd, 5, "\x0d", 1 );	// test
-}
-#endif
-		}
+		trx( obj, (char*)cmd, 5, "\x0d", 1 );
 	}
-	/// @FIXME the following lines need sorting out
-//	trx( obj, "\x03\x02\x2D\x00", 4, "\x0D", 1);	// close xdata write session
-	trx( obj, "\x03\x02\x2E\x00", 4, "\x0D", 1);	// close xdata write session	2e for F120, 2d for F020
+	//write postamble
+	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+		trx(obj,"\x03\x02\x2D\x00",4,"\x0D",1);
+	else
+		trx(obj,"\x03\x02\x2E\x00",4,"\x0D",1);
 	return TRUE;
 }
 
@@ -1243,13 +1211,10 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	assert( (start+len) <= 0x100 );		// must be in one page only
 	
 	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
-	{
-		trx( obj, "\x03\x02\x2D\x01", 4, "\x0D", 1 );		// 2d for 020 2e for f120
-	}
+		trx( obj, "\x03\x02\x2D\x01", 4, "\x0D", 1 );
 	else
-	{
-		trx( obj, "\x03\x02\x2E\x01", 4, "\x0D", 1 );		// 2d for 020 2e for f120
-	}
+		trx( obj, "\x03\x02\x2E\x01", 4, "\x0D", 1 );
+
 	// select page
 	cmd[0] = 0x03;
 	cmd[1] = 0x02;
@@ -1263,7 +1228,8 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	trx( obj, (char*)cmd, 4, "\x0D", 1 );
 	cmd[0] = 0x06;
 	cmd[1] = 0x02;
-	/// @FIXME shoulden't we begin reading at the desired location within the page?
+	/// @FIXME shoulden't we begin reading at the desired location
+	//	 within the page?
 	// read the rest
 	for( i=0; i<len; i+=0x3C )
 	{
@@ -1273,9 +1239,12 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 		read_port( obj, buf, cmd[3]+1 );	// +1 for 0x0d terminator
 		buf += cmd[3];
 	}
+	// close out XDATA read process...bug fix for bug #2024032
+	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+		trx( obj, "\x03\x02\x2D\x00", 4, "\x0D", 1 );
+	else
+		trx( obj, "\x03\x02\x2E\x00", 4, "\x0D", 1 );
 }
-
-
 
 
 /** Flash write routine for JTAG mode.
@@ -1359,7 +1328,9 @@ BOOL jtag_target_halt_poll( EC2DRV *obj )
 BOOL jtag_target_reset( EC2DRV *obj )
 {
 	BOOL r = TRUE;
-	r &= trx( obj, "\x04", 1, "\x0D", 1 );
+	jtag_connect_target (obj);
+	//r &= trx( obj, "\x04", 1, "\x0D", 1 );
+	
 	r &= trx( obj, "\x1A\x06\x00\x00\x00\x00\x00\x00", 8, "\x0D", 1 );
 	r &= trx( obj, "\x0B\x02\x02\x00", 4, "\x0D", 1 );	// sys reset
 	r &= trx( obj, "\x14\x02\x10\x00", 4, "\x04", 1 );
@@ -1370,10 +1341,10 @@ BOOL jtag_target_reset( EC2DRV *obj )
 	r &= trx( obj, "\x16\x02\x81\x30", 4, "\x01\x00", 2 );
 	r &= trx( obj, "\x15\x02\x08\x00", 4, "\x04", 1 );
 	r &= trx( obj, "\x16\x01\xE0", 3, "\x00", 1 );
-		
-	r &= trx( obj, "\x0B\x02\x01\x00", 4,"\x0D", 1 );
-	r &= trx( obj, "\x13\x00", 2, "\x01", 1 );
-	r &= trx( obj, "\x03\x02\x00\x00", 4, "\x0D", 1 );
+	if (ec2_target_halt (obj))
+		r &= trx( obj, "\x03\x02\x00\x00", 4, "\x0D", 1 );
+	else
+		r = FALSE;
 	return r;
 }
 

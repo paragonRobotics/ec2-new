@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <stdio.h>
 #include "types.h"
 #include "module.h"
 #include "symtab.h"
@@ -275,6 +276,7 @@ bool CmdX::readMem( uint32_t flat_addr, unsigned int readByteLength, unsigned ch
 {
 	unsigned char b;
 	char area;
+	uint8_t pageNumber = 0;
 	ADDR addr = MemRemap::target( flat_addr, area );
 	switch( area)
 	{
@@ -291,7 +293,10 @@ bool CmdX::readMem( uint32_t flat_addr, unsigned int readByteLength, unsigned ch
 			gSession.target()->read_data( addr+0x100, readByteLength, returnPointer );	// @FIXME: the offset is incorrect and we probably need a target function for accessing idata
 			return true;
 		case 's':
-			gSession.target()->read_sfr( addr, readByteLength, returnPointer );
+			// extract the SFR page number from the flat address
+			// @FIXME: should properly implement in memremap...
+			pageNumber = ((flat_addr&0xFF00) >> 8);
+			gSession.target()->read_sfr( addr, pageNumber, readByteLength, returnPointer );
 			return true;
 		default:
 			printf("ERROR: invalid memory area '%c'\n",area);
@@ -299,5 +304,80 @@ bool CmdX::readMem( uint32_t flat_addr, unsigned int readByteLength, unsigned ch
 	}
 }
 
+bool CmdChange::direct( string cmd )
+{
+	vector<string> tokens;
+	vector<string>::iterator it;
+	Tokenize(cmd, tokens);
+	uint32_t flat_addr;
+	uint16_t intValue;
+	unsigned char charValue;
+	
+	if(( tokens.size()!=3)||(strcmp("=",tokens[1].c_str()))) {
+		printf("ERROR: format must be $register/memory = value\n");
+		return false;
+	}
+	// figure out value to assign
+	intValue = (uint16_t) strtoul (tokens[2].c_str(),NULL,0);
+	charValue = (unsigned char) strtoul (tokens[2].c_str(),NULL,0);
+	
+	// check if the target is a register
+	if (tokens[0][0] == '$') {
+		if (strcmp(tokens[0].c_str(),"$a")==0) {
+			printf ("setting acc to %d\n",charValue);
+			gSession.target()->write_sfr(0xe0,0,1,&charValue);
+			return true;
+		}
+		else if (strcmp(tokens[0].c_str(),"$pc")==0) {
+			printf ("setting pc to %d\n",intValue);
+			gSession.target()->write_PC(intValue);
+			return true;
+		}
+		else if (strcmp(tokens[0].c_str(),"$dptr")==0) {
+			printf ("setting dptr to %d\n",intValue);
+			// set DPL
+			charValue = intValue % 256;
+			gSession.target()->write_sfr(0x82,0,1,&charValue);
+			// set DPH
+			charValue = intValue / 256;
+			gSession.target()->write_sfr(0x83,0,1,&charValue);
+			return true;
+		}
+		return false;
+	}
+	
+	// target isn't a register, so try and figure out memory location
+	flat_addr = strtoul(tokens[0].c_str(),0,0);
+	return writeMem (flat_addr, 1, &charValue);
+}
 
+
+bool CmdChange::writeMem( uint32_t flat_addr, unsigned int byteLength, unsigned char* writePointer )
+{
+	unsigned char b;
+	char area;
+	ADDR addr = MemRemap::target( flat_addr, area );
+	switch( area)
+	{
+		case 'c':
+			// can't write code memory, so return false
+			printf("ERROR: can't write to code area\n");
+			return false;
+		case 'd':
+			gSession.target()->write_data( addr, byteLength, writePointer );
+			return true;
+		case 'x':
+			gSession.target()->write_xdata( addr, byteLength, writePointer );
+			return true;
+		case 'i':
+			gSession.target()->write_data( addr+0x100, byteLength, writePointer );	// @FIXME: the offset is incorrect and we probably need a target function for accessing idata
+			return true;
+		case 's':
+			gSession.target()->write_sfr( addr, 0, byteLength, writePointer );
+			return true;
+		default:
+			printf("ERROR: invalid memory area '%c'\n",area);
+			return false;
+	}
+}
 

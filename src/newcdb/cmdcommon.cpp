@@ -23,7 +23,7 @@
 #include <ctype.h>
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
-
+#include <stdio.h>
 #include "types.h"
 #include "cmdcommon.h"
 #include "target.h"
@@ -314,6 +314,8 @@ bool CmdContinue::directnoarg()
 bool CmdRun::directnoarg()
 {
 	gSession.target()->stop();
+	gSession.target()->disconnect();
+	gSession.target()->connect();	
 	gSession.target()->reset();
 	gSession.bpmgr()->reload_all();
 	
@@ -325,7 +327,7 @@ bool CmdRun::directnoarg()
 	gSession.bpmgr()->stopped(addr);
 	gSession.contextmgr()->set_context(addr);
 	gSession.contextmgr()->dump();
-	return true;
+	return true; 
 }
 
 
@@ -339,6 +341,10 @@ bool CmdFile::direct( string cmd)
 	gSession.symtree()->clear();	
 	gSession.bpmgr()->clear_all();
 
+	// disconnect and reconnect to make sure data is valid (fixes bug where
+	//   data reads are wrong after loading new file)
+	gSession.target()->disconnect();
+	gSession.target()->connect();
 	CdbFile cdbfile(&gSession);
 	cdbfile.open( cmd+".cdb" );
 	return gSession.target()->load_file(cmd+".ihx");

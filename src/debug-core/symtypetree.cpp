@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <iostream>
 #include <iomanip>
+#include <stdio.h>
 #include "symtypetree.h"
 #include "contextmgr.h"
 #include "target.h"

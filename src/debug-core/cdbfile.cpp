@@ -57,7 +57,7 @@ bool CdbFile::open( string filename )
 		while( !in.eof() )
 		{
 			getline( in, line );
-			cout <<"Line "<<i<<" : "<<line<<endl;
+			//cout <<"Line "<<i<<" : "<<line<<endl;
 			parse_record( line );
 		//	m_symtab->dump();
 			i++;
@@ -69,8 +69,8 @@ bool CdbFile::open( string filename )
 		cout << "ERROR coulden't open file '"<<filename.c_str()<<"'."<<endl;
 		return false;	// failed to open file
 	}
-	cout << "module dump:"<<endl;
-	mSession->modulemgr()->dump();
+	//cout << "module dump:"<<endl;
+	//mSession->modulemgr()->dump();
 	return true;
 }
 

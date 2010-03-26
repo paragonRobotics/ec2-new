@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <iostream>
 #include <pthread.h>
+#include <stdio.h>
 #include "targetsilabs.h"
 #include "ec2drv.h"
 
@@ -261,7 +262,7 @@ void TargetSiLabs::read_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	ec2_read_xdata( &obj, (char*)buf, addr, len );
 }
 
-void TargetSiLabs::read_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetSiLabs::read_code( uint16_t addr, int len, unsigned char *buf )
 {
 	ec2_read_flash( &obj, buf, addr, len );
 }
@@ -312,12 +313,14 @@ void TargetSiLabs::write_xdata( uint16_t addr, uint16_t len, unsigned char *buf 
 	ec2_write_xdata( &obj, (char*)buf, addr, len );
 }
 
-void TargetSiLabs::write_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetSiLabs::write_code( uint16_t addr, int len, unsigned char *buf )
 {
 	cout << "Writing to flash with auto erase as necessary" << endl;
-	printf("\tWriting %i bytes at 0x%04x\n",len,addr);
-	if( ec2_write_flash_auto_erase( &obj, buf, (int)addr, (int)len ) )
-//	if( ec2_write_flash( &obj, (char*)buf, (int)addr, (int)len ) )
+	printf("\tWriting %d bytes at 0x%04x\n",len,addr);
+	// also erase scratchpad, since we may be using that for storage
+	cout << "Erasing scratchpad";
+	ec2_erase_flash_scratchpad( &obj );
+	if( ec2_write_flash_auto_erase( &obj, buf, (int)addr, len ) )
 		cout << "Flash write successful." << endl;
 	else
 		cout << "ERROR: Flash write Failed." << endl;

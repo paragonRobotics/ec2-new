@@ -27,7 +27,7 @@
 #include <errno.h>			// Error number definitions
 #include <termios.h>		// POSIX terminal control definitions
 #include <sys/ioctl.h>
-
+#include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -489,7 +489,7 @@ void TargetS51::read_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	parse_mem_dump( recvSim( 250 ), buf, len );
 }
 
-void TargetS51::read_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetS51::read_code( uint16_t addr, int len, unsigned char *buf )
 {
 	char cmd[16];
 	snprintf(cmd,16,"dch 0x%04x 0x%04x\n",addr, (addr+len-1) );
@@ -542,7 +542,7 @@ void TargetS51::write_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	write_mem("xram",addr,len,buf);
 } 
 
-void TargetS51::write_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetS51::write_code( uint16_t addr, int len, unsigned char *buf )
 {
 	write_mem("rom",addr,len,buf);
 }

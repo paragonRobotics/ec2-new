@@ -19,6 +19,7 @@
  ***************************************************************************/
 #include <iostream>
 #include <vector>
+#include <stdio.h>
 #include "target.h"
 #include "breakpointmgr.h"
 #include "symtab.h"

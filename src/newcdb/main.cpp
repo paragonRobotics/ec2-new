@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <string.h>
 #include <iostream>
 #include <cstdlib>
 #include <list>
@@ -189,6 +190,7 @@ int main(int argc, char *argv[])
 	cmdlist.push_back( new CmdFinish() );
 	cmdlist.push_back( new CmdDisassemble() );
 	cmdlist.push_back( new CmdX() );
+	cmdlist.push_back( new CmdChange() );
 	cmdlist.push_back( new CmdMaintenance() );
 	cmdlist.push_back( new CmdPrint() );
 	cmdlist.push_back( new CmdRegisters() );

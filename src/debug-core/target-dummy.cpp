@@ -150,7 +150,7 @@ void TargetDummy::read_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	memset(buf,0x55,len);
 }
 
-void TargetDummy::read_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetDummy::read_code( uint16_t addr, int len, unsigned char *buf )
 {
 	memset(buf,0x55,len);
 }
@@ -187,7 +187,7 @@ void TargetDummy::write_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 {
 }
 
-void TargetDummy::write_code( uint16_t addr, uint16_t len, unsigned char *buf )
+void TargetDummy::write_code( uint16_t addr, int len, unsigned char *buf )
 {
 }
 

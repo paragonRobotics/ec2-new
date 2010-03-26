@@ -42,6 +42,19 @@ protected:
 	char format;		///< Format specifier
 };
 
+class CmdChange : public CmdShowSetInfoHelp
+{
+public:
+	CmdChange()
+	{
+		name="change";
+	}
+	bool direct( string cmd );
+	
+protected:
+	bool writeMem( uint32_t flat_addr, unsigned int readByteLength, unsigned char* returnPointer );
+};
+
 class CmdDisassemble : public CmdShowSetInfoHelp
 {
 public:

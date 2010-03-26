@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 			if( boot_local_calc_page_cksum(buf) !=	boot_calc_page_cksum(&ec2obj) )
 			{
 				fprintf(stderr,"Error - Bad CRC, retrying\n");
-				addr -= 512;
+			//	addr -= 512;
 			}
 		}
 	}

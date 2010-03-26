@@ -4,6 +4,36 @@
 #include <string.h>
 #include "c2_mode.h"
 
+uint8_t c2_special_read( EC2DRV *obj, uint8_t sfr)
+{
+	int i;
+	uint8_t cmd[10];
+	char buf[5];
+	
+	cmd[0] = 0x36;
+	cmd[1] = sfr & 0xff;	// low byte
+	cmd[2] = 1;
+
+	write_port( obj, (char*)cmd, 3 );
+	read_port( obj, (char*)buf, 2 );	// +1 for 0x0d
+
+	return buf[0];
+}
+
+void c2_special_write( EC2DRV *obj, uint8_t sfr, uint8_t value )
+{
+	int i;
+	uint8_t cmd[10];
+	char buf[5];
+
+	cmd[0] = 0x37;
+	cmd[1] = sfr & 0xff;	// low byte
+	cmd[2] = 1;
+	cmd[3] = value & 0xff;
+	write_port( obj, (char*)cmd, 4 );
+	read_port( obj, (char*)buf, 1 );	// +1 for 0x0d
+}
+
 /** Perform opperations necessary before any flash write or erase
 	These can be slightly processor specific.
 
@@ -28,6 +58,46 @@ static void flash_write_pre( EC2DRV *obj )
 		ec2_write_paged_sfr( obj, SFR_RSTSRC, 0x4a );
 		ec2_write_raw_sfr( obj, 0xa0, reg_a0_save ); // restore a0 = 80
 	}
+	else if( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F340, C8051F347 ) )
+	{
+		char buf[5];
+		
+		c2_special_read (obj, 0xbf);
+		c2_special_read (obj, 0x8f);
+		c2_special_write (obj, 0xbf, 0x01);
+		c2_special_read (obj, 0xbf);
+		//c2_special_write (obj, 0x8f, 0x00);
+		c2_special_write (obj, 0xbf, 0x01);
+		c2_special_read (obj, 0xff);
+		c2_special_write (obj, 0xff, 0xd8);
+		c2_special_read (obj, 0xff);
+		c2_special_read (obj, 0xbf);
+		c2_special_write (obj, 0xbf, 0x01);
+		c2_special_read (obj, 0xa0);
+		c2_special_write (obj, 0xa0, 0x90);
+		ec2_read_raw_sfr( obj, 0xbf, &ok );
+		ec2_read_raw_sfr( obj, 0xef, &ok );
+		c2_special_write (obj, 0xa0, 0x80);
+		c2_special_write (obj, 0xbf, 0x01);
+	}
+	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 )))
+	{
+		char buf[5];
+		
+		c2_special_write (obj, 0xef, 0x48);
+		c2_special_write (obj, 0xff, 0x60);
+		c2_special_read (obj, 0xa7);
+		//c2_special_write (obj, 0x8f, 0x00);
+		c2_special_read (obj, 0xff);
+		c2_special_read (obj, 0xa0);
+		c2_special_write (obj, 0xa0, 0x90);
+		ec2_read_raw_sfr( obj, 0xa7, &ok );
+		ec2_read_raw_sfr( obj, 0xef, &ok );
+		c2_special_write (obj, 0xa0, 0x80);
+		c2_special_write (obj, 0xff, 0xe0);
+		c2_special_write (obj, 0xef, 0x4a);
+	}
 }
 
 
@@ -46,6 +116,10 @@ static void flash_write_post( EC2DRV *obj )
 		SFRREG SFR_VDDMON = { 0, 0xff };
 		SFRREG SFR_RSTSRC = { 0, 0xef };
 		ec2_write_paged_sfr( obj, SFR_VDDMON, 0xc0 );	// VDMLVL = 0
+	}
+	else if( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F340, C8051F347 ) )
+	{
+
 	}
 }
 
@@ -111,6 +185,7 @@ void c2_erase_flash( EC2DRV *obj )
 	write_port( obj, "\x3C",1);			// Erase entire device
 	read_port_ch(obj);					// 0x0d
 	flash_write_post(obj);
+	c2_special_write (obj, 0x8f, 0x00);
 	if( obj->dbg_adaptor==EC3 )
 	{
 		ec2_disconnect( obj );
@@ -126,17 +201,30 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	BOOL r;
 	char cmd[2];
 	flash_write_pre(obj);
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		if (scratchpad) {
+			c2_special_write (obj, 0x8f, 0x04);
+		}
+		else {
+			c2_special_write (obj, 0x8f, 0x00);
+		}
+	}
 	cmd[0] = 0x30;		// sector erase command
 	cmd[1] = sector_addr/ obj->dev->flash_sector_size;
 	r =  trx( obj, cmd, 2, "\x0d", 1 );
 	flash_write_post(obj);
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		c2_special_write (obj, 0x8f, 0x00);
+	}
 	DUMP_FUNC_END();
 	return r;
 }
 
 /*  C2 version of ec2_write_flash
 */
-BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
+BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOOL scratchpad )
 {
 	DUMP_FUNC();
 //	if(!check_flash_range( obj, start_addr, len )) return FALSE;
@@ -161,7 +249,15 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
 	BOOL ok;
 
 	flash_write_pre(obj);
-
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		if (scratchpad) {
+			c2_special_write (obj, 0x8f, 0x04);
+		}
+		else {
+			c2_special_write (obj, 0x8f, 0x00);
+		}
+	}
 	cmd[0] = 0x2f;									// Write code/flash memory cmd	
 	for( i=0; i<len; i+=8 )
 	{
@@ -176,16 +272,29 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
 
 	// estore origional condition
 	flash_write_post(obj);
-
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		c2_special_write (obj, 0x8f, 0x00);
+	}
 	return TRUE;
 }
 
 
-BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
+BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOOL scratchpad )
 {
 	int i;
 	uint8_t cmd[10];
 	uint32_t addr;
+	
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		if (scratchpad) {
+			c2_special_write (obj, 0x8f, 0x04);
+		}
+		else {
+			c2_special_write (obj, 0x8f, 0x00);
+		}
+	}
 	// C2 mode is much simpler
 	//
 	// example command 0x2E 0x00 0x00 0x0C
@@ -203,6 +312,10 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
 		cmd[3] = (len-i) > 0x0c ? 0x0c : (len-i);
 		write_port( obj, (char*)cmd, 4 );
 		read_port( obj, (char*)buf+i, cmd[3]+1 );	// +1 for 0x0d
+	}
+	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+		c2_special_write (obj, 0x8f, 0x00);
 	}
 	return TRUE;
 }
@@ -289,8 +402,7 @@ BOOL c2_read_xdata_F350( EC2DRV *obj, char *buf, int start_addr, int len )
 		cmd[2] = 0x00;
 		cmd[3] = (len-ofs)>=max_read_len ? max_read_len : (len-ofs);
 		write_port( obj, (char*)cmd, 4 );
-		read_port( obj, (char*)buf+ofs, cmd[3] );
-		read_port_ch( obj );		// 0x0d	terminator
+		read_port( obj, (char*)buf+ofs, cmd[3]+1 ); // for 0x0d terminator
 	}
 
 	// restore SFR page register
@@ -762,7 +874,7 @@ static BOOL ec2_connect_jtag( EC2DRV *obj, const char *port );
 
 BOOL c2_addBreakpoint( EC2DRV *obj, uint8_t bp, uint32_t addr )
 {
-//	printf("C2: Adding breakpoint into position %i, addr=0x%04x\n",bp,addr);
+	printf("C2: Adding breakpoint into position %i, addr=0x%08x\n",bp,addr);
 	assert(obj->mode==C2);
 	assert(bp<4);
 	
@@ -798,11 +910,11 @@ void c2_write_breakpoints( EC2DRV *obj )
 	
 	if( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F340, C8051F347 ))
 	{
-		SFRREG bp_active_reg = {1,0xe5};
+		const SFRREG BP_ACTIVE_REG	= { 0x01, 0xe5 };
 		uint8_t active_bitmap = 0x00;
 
 		// disable all breakpoints
-		ec2_write_paged_sfr(obj, bp_active_reg, 0x00);
+		ec2_write_paged_sfr(obj, BP_ACTIVE_REG, 0x00);
 
 		for( i=0; i<4; i++ )
 		{
@@ -812,16 +924,17 @@ void c2_write_breakpoints( EC2DRV *obj )
 				active_bitmap |= 1<<i;
 			ec2_write_paged_sfr( obj, obj->dev->SFR_BP_L[i], low );
 			ec2_write_paged_sfr( obj, obj->dev->SFR_BP_H[i], high );
-			ec2_write_paged_sfr( obj, bp_active_reg, active_bitmap );
+			ec2_write_paged_sfr( obj, BP_ACTIVE_REG, active_bitmap );
 		}
 	}
-	else if( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F931 ))
+	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 )))
 	{
-		SFRREG bp_active_reg = {1,0xf4};
+		const SFRREG BP_ACTIVE_REG	= { 0x01, 0xf4};
 		uint8_t active_bitmap = 0x00;
 
 		// disable all breakpoints
-		ec2_write_paged_sfr(obj, bp_active_reg, 0x00);
+		ec2_write_paged_sfr(obj, BP_ACTIVE_REG, 0x00);
 
 		for( i=0; i<4; i++ )
 		{
@@ -831,7 +944,7 @@ void c2_write_breakpoints( EC2DRV *obj )
 				active_bitmap |= 1<<i;
 			ec2_write_paged_sfr( obj, obj->dev->SFR_BP_L[i], low );
 			ec2_write_paged_sfr( obj, obj->dev->SFR_BP_H[i], high );
-			ec2_write_paged_sfr( obj, bp_active_reg, active_bitmap );
+			ec2_write_paged_sfr( obj, BP_ACTIVE_REG, active_bitmap );
 		}
 	}
 	else

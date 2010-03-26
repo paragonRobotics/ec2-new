@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
 #include "symbol.h"
 #include "symtypetree.h"
 #include "contextmgr.h"

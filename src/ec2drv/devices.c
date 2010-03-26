@@ -8,6 +8,7 @@ extern DEVICE devices[];
 DEVICE *getDevice( uint8_t id, uint8_t rev )
 {
 	int i = 0;
+	printf("id=0x%02x, rev=%02x\n",id, rev);
 	do
 	{
 		if( (devices[i].id==id)&&(devices[i].rev==255) )
@@ -15,7 +16,7 @@ DEVICE *getDevice( uint8_t id, uint8_t rev )
 		else if( (devices[i].id==id)&&(devices[i].rev==rev) )
 			return &devices[i];
 	} while( devices[++i].name[0] != 0 );
-	printf("id=0x%02x, rev=%02x\n",id, rev);
+	
 	return &unknown_dev;
 }
 
@@ -23,6 +24,7 @@ DEVICE *getDevice( uint8_t id, uint8_t rev )
 DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev )
 {
 	int i=0;
+	printf("unique_id=0x%02x, rev=%02x\n",unique_id, rev);
 	do
 	{
 		if( (devices[i].unique_id==unique_id)&&(devices[i].rev==255) )
@@ -30,7 +32,7 @@ DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev )
 		else if( (devices[i].unique_id==unique_id)&&(devices[i].rev==rev) )
 			return &devices[i];
 	} while( devices[++i].name[0] != 0 );
-	printf("unique_id=0x%02x, rev=%02x\n",unique_id, rev);
+	
 	return &unknown_dev;
 }
 
