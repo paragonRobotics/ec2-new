@@ -1,0 +1,121 @@
+AC_INIT(configure.in)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(ec2drv, 0.5)
+
+
+AC_DEFUN([AX_PYTHON],
+[AC_MSG_CHECKING(for python build information)
+AC_MSG_RESULT([])
+for python in python2.4 python2.3 python2.2 python2.1 python; do
+AC_CHECK_PROGS(PYTHON_BIN, [$python])
+ax_python_bin=$PYTHON_BIN
+if test x$ax_python_bin != x; then
+   AC_CHECK_LIB($ax_python_bin, main, ax_python_lib=$ax_python_bin, ax_python_lib=no)
+   AC_CHECK_HEADER([$ax_python_bin/Python.h],
+   [[ax_python_header=`locate $ax_python_bin/Python.h | sed -e s,/Python.h,,`]],
+   ax_python_header=no)
+   if test $ax_python_lib != no; then
+     if test $ax_python_header != no; then
+       break;
+     fi
+   fi
+fi
+done
+if test x$ax_python_bin = x; then
+   ax_python_bin=no
+fi
+if test x$ax_python_header = x; then
+   ax_python_header=no
+fi
+if test x$ax_python_lib = x; then
+   ax_python_lib=no
+fi
+
+AC_MSG_RESULT([  results of the Python check:])
+AC_MSG_RESULT([    Binary:      $ax_python_bin])
+AC_MSG_RESULT([    Library:     $ax_python_lib])
+AC_MSG_RESULT([    Include Dir: $ax_python_header])
+
+if test x$ax_python_header != xno; then
+  PYTHON_INCLUDE_DIR=$ax_python_header
+  AC_SUBST(PYTHON_INCLUDE_DIR)
+fi
+if test x$ax_python_lib != xno; then
+  PYTHON_LIB=$ax_python_lib
+  AC_SUBST(PYTHON_LIB)
+fi
+])dnl
+
+dnl===========================================
+dnl Check for readline and associated macros
+dnl===========================================
+AC_DEFUN([VL_LIB_READLINE], [
+  AC_CACHE_CHECK([for a readline compatible library],
+                 vl_cv_lib_readline, [
+    ORIG_LIBS="$LIBS"
+    for readline_lib in readline edit editline; do
+      for termcap_lib in "" termcap curses ncurses; do
+        if test -z "$termcap_lib"; then
+          TRY_LIB="-l$readline_lib"
+        else
+          TRY_LIB="-l$readline_lib -l$termcap_lib"
+        fi
+        LIBS="$ORIG_LIBS $TRY_LIB"
+        AC_TRY_LINK_FUNC(readline, vl_cv_lib_readline="$TRY_LIB")
+        if test -n "$vl_cv_lib_readline"; then
+          break
+        fi
+      done
+      if test -n "$vl_cv_lib_readline"; then
+        break
+      fi
+    done
+    if test -z "$vl_cv_lib_readline"; then
+      vl_cv_lib_readline="no"
+      LIBS="$ORIG_LIBS"
+    fi
+  ])
+
+  if test "$vl_cv_lib_readline" != "no"; then
+    AC_DEFINE(HAVE_LIBREADLINE, 1,
+              [Define if you have a readline compatible library])
+    AC_CHECK_HEADERS(readline.h readline/readline.h)
+    AC_CACHE_CHECK([whether readline supports history],
+                   vl_cv_lib_readline_history, [
+      vl_cv_lib_readline_history="no"
+      AC_TRY_LINK_FUNC(add_history, vl_cv_lib_readline_history="yes")
+    ])
+    if test "$vl_cv_lib_readline_history" = "yes"; then
+      AC_DEFINE(HAVE_READLINE_HISTORY, 1,
+                [Define if your readline library has \`add_history'])
+      AC_CHECK_HEADERS(history.h readline/history.h)
+    fi
+  fi
+])dnl
+
+
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+AX_PYTHON
+VL_LIB_READLINE
+
+AC_HAVE_LIBRARY(usb,
+				AC_CHECK_LIB(usb,usb_detach_kernel_driver_np,
+							[AC_DEFINE(HAVE_USB_DETACH_KERNEL_DRIVER_NP,1,[Test for Linux only libusb functions])] ),
+				AC_MSG_ERROR([Sorry you do not appear to have libusb available on yor system])
+				)
+
+
+
+AC_OUTPUT(Makefile src/Makefile src/ec2drv/Makefile src/ec2tools/Makefile src/newcdb/Makefile doc/Makefile src/devel-tools/Makefile src/debug-core/Makefile)
+
+
+
+
+
+
+
+
+

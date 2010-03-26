@@ -1,0 +1,13 @@
+*.mem
+*.asm
+*.adb
+*.rst
+*.sym
+*.lst
+*.lnk
+*.rel
+*.map
+*.cdb
+*.ihx
+core.*
+

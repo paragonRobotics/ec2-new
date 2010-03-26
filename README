@@ -1,0 +1,24 @@
+ec2drv provides Linux support for the Silicon Laboritories EC2 serial debug
+adaptor.
+
+newcdb provides a new GDB like interface for ec2drv but also for the s51
+simulator.  This is more flexiable than ec2cdb / sdcdb in that it allows easy
+configuration to the target to use.  Also the readline support works correctly
+for history etc.
+
+ec2cdb is my first attempt at a c debugger interface, basically a quick hack of
+sdcdb replacing the calls to s51 with calls into ec2drv.  
+At the moment I think newcdb is the better option since I have tested it more
+but it is still missing some functionality.
+
+
+ec2tools contains programs that use the core library to perform various actions.
+	ec2test-any	- tast the opperation of a micro / debugger combination
+	ec2readflash 	Read the targets flash memory.
+	ec2writeflash 	Write to the targets flash memory.
+	ec2device		Identify connected microprocessor
+	ec3adapters		List all USB debug adaptors found and their serial numbers
+					This is for both EC3 and toolstick debuggers.
+	ec2readfw		Read teh debuggers firmware image
+	ec2-update-fw	write new firmware into the debugger
+	

@@ -1,0 +1,215 @@
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core
+END
+contextmgr.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/317/ec2drv/trunk/src/debug-core/contextmgr.h
+END
+ihex.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/ec2drv/!svn/ver/308/ec2drv/trunk/src/debug-core/ihex.h
+END
+linespec.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/linespec.cpp
+END
+memremap.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/308/ec2drv/trunk/src/debug-core/memremap.cpp
+END
+symtab.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/ec2drv/!svn/ver/317/ec2drv/trunk/src/debug-core/symtab.h
+END
+breakpointmgr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/ec2drv/!svn/ver/331/ec2drv/trunk/src/debug-core/breakpointmgr.cpp
+END
+dbgsession.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/332/ec2drv/trunk/src/debug-core/dbgsession.h
+END
+types.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/ec2drv/!svn/ver/320/ec2drv/trunk/src/debug-core/types.h
+END
+symbol.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/symbol.h
+END
+target-dummy.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/target-dummy.cpp
+END
+outformat.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/outformat.cpp
+END
+targets51.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/324/ec2drv/trunk/src/debug-core/targets51.h
+END
+module.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/module.cpp
+END
+target.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/target.cpp
+END
+targetsilabs.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/ec2drv/!svn/ver/324/ec2drv/trunk/src/debug-core/targetsilabs.h
+END
+contextmgr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/ec2drv/!svn/ver/317/ec2drv/trunk/src/debug-core/contextmgr.cpp
+END
+cdbfile.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/cdbfile.h
+END
+symtypetree.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/symtypetree.h
+END
+symtab.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/317/ec2drv/trunk/src/debug-core/symtab.cpp
+END
+dbgsession.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/ec2drv/!svn/ver/327/ec2drv/trunk/src/debug-core/dbgsession.cpp
+END
+data_types.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/308/ec2drv/trunk/src/debug-core/data_types.h
+END
+symbol.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/symbol.cpp
+END
+linespec.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/linespec.h
+END
+memremap.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/308/ec2drv/trunk/src/debug-core/memremap.h
+END
+breakpointmgr.h
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/ec2drv/!svn/ver/320/ec2drv/trunk/src/debug-core/breakpointmgr.h
+END
+targets51.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/targets51.cpp
+END
+target-dummy.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/ec2drv/!svn/ver/315/ec2drv/trunk/src/debug-core/target-dummy.h
+END
+targetsilabs.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/ec2drv/!svn/ver/327/ec2drv/trunk/src/debug-core/targetsilabs.cpp
+END
+outformat.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/outformat.h
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/Makefile.am
+END
+cdbfile.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/317/ec2drv/trunk/src/debug-core/cdbfile.cpp
+END
+symtypetree.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/ec2drv/!svn/ver/314/ec2drv/trunk/src/debug-core/symtypetree.cpp
+END
+module.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/ec2drv/!svn/ver/339/ec2drv/trunk/src/debug-core/module.h
+END
+target.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svnroot/ec2drv/!svn/ver/327/ec2drv/trunk/src/debug-core/target.h
+END
+ihex.c
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svnroot/ec2drv/!svn/ver/308/ec2drv/trunk/src/debug-core/ihex.c
+END

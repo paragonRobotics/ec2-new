@@ -1,0 +1,12 @@
+Kolja Waschk provided the following information which allows non root users to use the USB debugger
+on Ubantu
+
+It is simple to allow non-root acccess to the EC3 in
+Ubuntu with udev; just this line into some udev rules
+file, e.g. in /etc/udev/rules.d/30-silabs.rules, and
+any member of the "dialout" group will be allowed to
+access the device as well:
+
+BUS=="usb", SYSFS{idVendor}=="10c4",
+SYSFS{idProduct}=="8044", GROUP="dialout"
+

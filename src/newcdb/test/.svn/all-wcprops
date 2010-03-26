@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/ec2drv/!svn/ver/306/ec2drv/trunk/src/newcdb/test
+END
+types_twofileA.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/types_twofileA.c
+END
+types_twofileB.c
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/types_twofileB.c
+END
+types_twofileA.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/types_twofileA.h
+END
+types_singlefile.c
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/types_singlefile.c
+END
+nested_types.c
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/ec2drv/!svn/ver/219/ec2drv/trunk/src/newcdb/test/nested_types.c
+END
+twofileA.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/twofileA.c
+END
+twofileB.c
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/twofileB.c
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/README
+END
+regtest.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/288/ec2drv/trunk/src/newcdb/test/regtest.c
+END
+asmtest_c.c
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/301/ec2drv/trunk/src/newcdb/test/asmtest_c.c
+END
+twofunc.c
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svnroot/ec2drv/!svn/ver/218/ec2drv/trunk/src/newcdb/test/twofunc.c
+END
+nested_struct.c
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/ec2drv/!svn/ver/219/ec2drv/trunk/src/newcdb/test/nested_struct.c
+END
+term_types_array.c
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svnroot/ec2drv/!svn/ver/305/ec2drv/trunk/src/newcdb/test/term_types_array.c
+END
+simple.c
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/ec2drv/!svn/ver/225/ec2drv/trunk/src/newcdb/test/simple.c
+END
+asmtest_a51.a51
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/ec2drv/!svn/ver/301/ec2drv/trunk/src/newcdb/test/asmtest_a51.a51
+END
+term_types.c
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svnroot/ec2drv/!svn/ver/270/ec2drv/trunk/src/newcdb/test/term_types.c
+END
+makefile
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svnroot/ec2drv/!svn/ver/306/ec2drv/trunk/src/newcdb/test/makefile
+END
+.cvsignore
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svnroot/ec2drv/!svn/ver/241/ec2drv/trunk/src/newcdb/test/.cvsignore
+END

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svnroot/ec2drv/!svn/ver/272/ec2drv/trunk/doc
+END
+newcdb-EC2-examples.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svnroot/ec2drv/!svn/ver/105/ec2drv/trunk/doc/newcdb-EC2-examples.txt
+END
+ubantu-usb.txt
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svnroot/ec2drv/!svn/ver/108/ec2drv/trunk/doc/ubantu-usb.txt
+END
+ec3.usermap
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svnroot/ec2drv/!svn/ver/89/ec2drv/trunk/doc/ec3.usermap
+END
+usb-sniffing.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svnroot/ec2drv/!svn/ver/109/ec2drv/trunk/doc/usb-sniffing.txt
+END
+60-silabs.rules
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svnroot/ec2drv/!svn/ver/272/ec2drv/trunk/doc/60-silabs.rules
+END
+Makefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/ec2drv/!svn/ver/125/ec2drv/trunk/doc/Makefile.am
+END
+ec3
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svnroot/ec2drv/!svn/ver/89/ec2drv/trunk/doc/ec3
+END
+sniffer.txt
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svnroot/ec2drv/!svn/ver/110/ec2drv/trunk/doc/sniffer.txt
+END
