@@ -81,7 +81,8 @@ static void flash_write_pre( EC2DRV *obj )
 		c2_special_write (obj, 0xbf, 0x01);
 	}
 	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 )))
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001)))
 	{
 		char buf[5];
 		
@@ -201,8 +202,9 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	BOOL r;
 	char cmd[2];
 	flash_write_pre(obj);
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -214,8 +216,9 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	cmd[1] = sector_addr/ obj->dev->flash_sector_size;
 	r =  trx( obj, cmd, 2, "\x0d", 1 );
 	flash_write_post(obj);
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	DUMP_FUNC_END();
@@ -249,8 +252,9 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 	BOOL ok;
 
 	flash_write_pre(obj);
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -272,8 +276,9 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 
 	// estore origional condition
 	flash_write_post(obj);
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	return TRUE;
@@ -286,8 +291,9 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 	uint8_t cmd[10];
 	uint32_t addr;
 	
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -313,8 +319,9 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 		write_port( obj, (char*)cmd, 4 );
 		read_port( obj, (char*)buf+i, cmd[3]+1 );	// +1 for 0x0d
 	}
-	if (( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))) {
+	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001))) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	return TRUE;
@@ -928,7 +935,8 @@ void c2_write_breakpoints( EC2DRV *obj )
 		}
 	}
 	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 )))
+		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1001)))
 	{
 		const SFRREG BP_ACTIVE_REG	= { 0x01, 0xf4};
 		uint8_t active_bitmap = 0x00;
