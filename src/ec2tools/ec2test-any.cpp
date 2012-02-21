@@ -789,7 +789,7 @@ bool test_pc_access( EC2DRV &obj )
 
 	print_subtest("PC = random");
 	const int NUM_TESTS = 100;
-	srand( time(0) );	
+	srand( time(0) );
 	pass = true;
 	for(int i=0; i<NUM_TESTS; i++)
 	{

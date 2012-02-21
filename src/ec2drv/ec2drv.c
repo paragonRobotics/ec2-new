@@ -115,7 +115,7 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.usb_out_endpoint = 0x02,
 	.usb_in_endpoint  = 0x81,
 	.has_bootloader	= TRUE,
-	.min_ver		= 0x07,
+	.min_ver		= 0x01,
 	.max_ver		= 0x0e
 	},
 	{
@@ -388,10 +388,10 @@ void ec2_disconnect( EC2DRV *obj )
 			c2_disconnect_target(obj);
 			write_usb_ch(obj, 0xff);	// turn off debugger
 			r = usb_release_interface(obj->ec3, 0);
-			assert(r == 0);
+			//assert(r == 0);
 			usb_reset(obj->ec3);
 			r = usb_close( obj->ec3);
-			assert(r == 0);
+			//assert(r == 0);
 			DUMP_FUNC_END();
 			return;
 		}
@@ -444,7 +444,12 @@ static uint8_t sfr_fixup( uint8_t addr )
 void ec2_read_sfr( EC2DRV *obj, char *buf, uint8_t addr )
 {
 	DUMP_FUNC();
-	assert( addr >= 0x80 );
+	if (addr > 0xff){
+		addr = 0xff;
+	}
+	if (addr < 0x80){
+		addr = 0x80;
+	}
 	ec2_read_ram_sfr( obj, buf, sfr_fixup( addr ), 1, TRUE );
 	DUMP_FUNC_END();
 }
@@ -471,7 +476,12 @@ void ec2_read_sfr( EC2DRV *obj, char *buf, uint8_t addr )
 void ec2_write_sfr( EC2DRV *obj, uint8_t value, uint8_t addr )
 {
 	DUMP_FUNC();
-	assert( addr >= 0x80 );
+	if (addr > 0xff){
+		addr = 0xff;
+	}
+	if (addr < 0x80){
+		addr = 0x80;
+	}
 
 	if( obj->mode==JTAG )
 		jtag_write_sfr( obj, value, sfr_fixup( addr ) );
@@ -613,7 +623,15 @@ void ec2_read_ram( EC2DRV *obj, char *buf, int start_addr, int len )
 void ec2_read_ram_sfr( EC2DRV *obj, char *buf, int start_addr, int len, BOOL sfr )
 {
 	DUMP_FUNC();
-	assert( (int)start_addr+len-1 <= 0xFF ); // -1 to allow reading 1 byte at 0xFF
+	if ((int)start_addr < 0){
+		start_addr = 0;
+	}
+	if ((int)start_addr > 0xff){
+		start_addr = 0xff;
+	}
+	if ((int)start_addr+len > 0xff){
+		len = 0x100 - (int)start_addr;
+	}
 
 	if( obj->mode == JTAG )
 		jtag_read_ram_sfr( obj, buf, start_addr, len, sfr );
@@ -637,7 +655,15 @@ BOOL ec2_write_ram( EC2DRV *obj, char *buf, int start_addr, int len )
 	DUMP_FUNC();
 	BOOL r = FALSE;
 	
-	assert( start_addr>=0 && start_addr<=0xFF );
+	if ((int)start_addr < 0){
+		start_addr = 0;
+	}
+	if ((int)start_addr > 0xff){
+		start_addr = 0xff;
+	}
+	if ((int)start_addr+len > 0xff){
+		len = 0x100 - (int)start_addr;
+	}
 	// printf("start addr = 0x%02x\n",start_addr);
 	if( obj->mode == JTAG )
 		r = jtag_write_ram( obj, buf, start_addr, len );
