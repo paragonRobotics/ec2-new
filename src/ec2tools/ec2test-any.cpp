@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "ec2drv.h"
 using namespace std;
 
