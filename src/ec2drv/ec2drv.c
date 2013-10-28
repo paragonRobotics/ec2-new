@@ -1934,6 +1934,7 @@ static void print_buf( char *buf, int len )
 ///////////////////////////////////////////////////////////////////////////////
 extern int usb_debug;		///< control libusb debugging
 
+#ifdef __GLIBC__
 #define USB_ERROR(libusbfunc,num)					\
 	error_at_line(	-1,								\
 					 -num,							\
@@ -1943,6 +1944,14 @@ extern int usb_debug;		///< control libusb debugging
 					libusbfunc,						\
 					__PRETTY_FUNCTION__,			\
 					num)
+#else
+#define USB_ERROR(libusbfunc,num)					         \
+    do {                                                     \
+        fprintf(stderr, "ec2drv: %s: %d: %s returned %d\n",  \
+				__FILE__, __LINE__, libusbfunc, num);        \
+        exit(1);                                             \
+    } while (0)
+#endif
 
 
 /* write a complete command to the EC3.
