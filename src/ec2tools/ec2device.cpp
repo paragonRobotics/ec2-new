@@ -22,7 +22,7 @@ void help()
 
 
 static EC2DRV obj;
-static sighandler_t old_sigint_handler;
+static void (*old_sigint_handler)(int);
 extern "C" void exit_func(void)
 {
 	cout << "exiting now" << endl;

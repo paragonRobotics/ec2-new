@@ -149,7 +149,7 @@ bool process_cmd_file( string filename )
 
 int main(int argc, char *argv[])
 {
-	sighandler_t	old_sig_int_handler;
+	void (*old_sig_int_handler)(int);
 
 	old_sig_int_handler = signal( SIGINT, sig_int_handler );
 	atexit(quit);
