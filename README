@@ -1,3 +1,12 @@
+This is gson's fork (https://github.com/gson1703/ec2-newer) of 
+paragonRobotics' fork (https://github.com/paragonRobotics/ec2-new) of
+Ricky White's ec2drv (http://ec2drv.sourceforge.net).
+
+It adds portability fixes aimed at making ec2drv work non-Linux
+systems in general, and NetBSD in particular.
+
+The original README follows.
+
 ec2drv provides Linux support for the Silicon Laboritories EC2 serial debug
 adaptor.
 
