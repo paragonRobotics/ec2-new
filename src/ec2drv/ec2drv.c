@@ -159,7 +159,8 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 				"*********************************************************************\n\n");
 		return FALSE;
 	}
-	strncpy( obj->port, port, sizeof(obj->port) );
+	if (port != obj->port)
+		strncpy( obj->port, port, sizeof(obj->port) );
 
 	if( obj->mode == AUTO )
 	{
