@@ -2019,9 +2019,11 @@ static BOOL read_usb( EC2DRV *obj, char *buf, int len )
 		print_buf(rxbuf,len+1);
 	}
 	memcpy( buf, rxbuf+1, len );
-	free( rxbuf );
 	if(r<0)
 		USB_ERROR("usb_interrupt_read",r);
+	if (r != rxbuf[0] + 1)
+		printf("WARNING: USB message size %d != 1 + length byte %d\n", r, rxbuf[0]);
+	free( rxbuf );
 	//usleep(10);
 	return r > 0;
 }
