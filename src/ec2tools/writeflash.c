@@ -84,11 +84,10 @@ void exit_func(void)
 
 
 
-#define MAXPORTLEN 1024
 int main(int argc, char *argv[])
 {
 	uint8_t buf[0x20000];
-	char port[MAXPORTLEN];
+	char *port = NULL;
 	int in, cnt;
 	uint32_t start=0, end=0;
 	static int hex, bin, run, eraseall, debug, help_flag, scratch_flag;
@@ -124,8 +123,7 @@ int main(int argc, char *argv[])
 			case 0:		// set a flag, nothing to do
 				break;
 			case 'p':	// port
-				printf("port = %s\n",optarg);
-				strncpy( port, optarg, MAXPORTLEN );
+                                port = optarg;
 				break;
 			case 's':	// start address, for bin mode only
 				start = strtoul( optarg, 0, 0);
