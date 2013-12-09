@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 	if( debug)
 		obj.debug = TRUE;
 	
-	if( help_flag || strlen(port)==0 )
+	if( help_flag || port == NULL || strlen(port)==0 )
 	{
 		help();
 		return  help_flag ? EXIT_SUCCESS : EXIT_FAILURE;
