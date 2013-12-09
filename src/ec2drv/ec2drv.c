@@ -220,9 +220,10 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 	{
 		debugger_sw_ver = boot_run_app(obj);
 	
-		printf( "%s firmware version = 0x%02x\n",
-				obj->dbg_info->name,
-				debugger_sw_ver );
+		if (obj->debug)
+			printf( "%s firmware version = 0x%02x\n",
+					obj->dbg_info->name,
+					debugger_sw_ver );
 	
 		if( debugger_sw_ver < obj->dbg_info->min_ver )
 		{
@@ -1671,7 +1672,8 @@ void ec2_reset( EC2DRV *obj )
 		// fixme the following is unsafe for some caller to ec2_reset
 //		ec2_disconnect( obj );
 //		ec2_connect( obj, obj->port );
-		printf("ec2_reset C2\n");
+		if (obj->debug)
+			printf("ec2_reset C2\n");
 	}
 	DUMP_FUNC_END();
 }
@@ -2203,8 +2205,8 @@ DBG_ADAPTER_INFO *ec2_GetDbgInfo( uint16_t usb_vendor_id,
 		if( debugger_info[i].usb_vendor_id == usb_vendor_id &&
 			debugger_info[i].usb_product_id == usb_product_id )
 		{
-			printf("ec2_GetDbgInfo(0x%04x,0x%04x)  %i\n",
-					usb_vendor_id,usb_product_id,i);
+			//printf("ec2_GetDbgInfo(0x%04x,0x%04x)  %i\n",
+			//		usb_vendor_id,usb_product_id,i);
 			return &debugger_info[i];
 		}
 //		else
