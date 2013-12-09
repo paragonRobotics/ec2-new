@@ -824,6 +824,7 @@ BOOL ec2_write_flash_auto_erase( EC2DRV *obj, uint8_t *buf,
 	// check if the flash is locked, in which case we need to do a complete
 	//   flash erase
 	if (flash_lock_byte(obj) != 0xff) {
+		printf("Flash is locked, erasing\n");
 		ec2_erase_flash (obj);
 	}
 	// otherwise we can just erase the sectors we will be writing to
