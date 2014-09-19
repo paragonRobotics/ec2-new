@@ -20,6 +20,7 @@
 #include <iostream>
 #include <pthread.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "targetsilabs.h"
 #include "ec2drv.h"
 
