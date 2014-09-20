@@ -387,6 +387,10 @@ void ec2_disconnect( EC2DRV *obj )
 	
 			c2_disconnect_target(obj);
 			write_usb_ch(obj, 0xff);	// turn off debugger
+			// Read and discard the response.  Otherwise it can remain
+			// buffered on the EC3 and be unexpectedly returned to the
+			// next program that attempts to use the EC3.
+			read_usb_ch(obj);
 			r = usb_release_interface(obj->ec3, 0);
 			//assert(r == 0);
 			usb_reset(obj->ec3);
