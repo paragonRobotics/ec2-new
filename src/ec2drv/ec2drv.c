@@ -2013,9 +2013,24 @@ static BOOL read_usb( EC2DRV *obj, char *buf, int len )
 	if( obj->debug )
 	{
 		printf("RX: ");
-		print_buf(rxbuf,len+1);
+		if (r > 0)
+			print_buf(rxbuf,r);
+		else
+			printf("error %d\n", r);
 	}
-	memcpy( buf, rxbuf+1, len );
+	if (r > 0) {
+		if (r != len + 1)
+		{
+			fprintf(stderr, "WARNING: USB read len %d != expected len %d\n",
+				r, len + 1);
+		}
+		if (rxbuf[0] != len)
+		{
+			fprintf(stderr, "WARNING: USB len byte %d != expected %d\n",
+				rxbuf[0], len);
+		}
+		memcpy( buf, rxbuf+1, len );
+	}
 	free( rxbuf );
 	if(r<0)
 		USB_ERROR("usb_interrupt_read",r);
