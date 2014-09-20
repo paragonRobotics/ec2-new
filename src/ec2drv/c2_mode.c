@@ -318,6 +318,8 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 		cmd[3] = (len-i) > 0x0c ? 0x0c : (len-i);
 		write_port( obj, (char*)cmd, 4 );
 		read_port( obj, (char*)buf+i, cmd[3]+1 );	// +1 for 0x0d
+		if (buf[i+cmd[3]] != 0x0d)
+			return FALSE;
 	}
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
