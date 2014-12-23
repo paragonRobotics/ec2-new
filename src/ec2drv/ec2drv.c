@@ -159,7 +159,8 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 				"*********************************************************************\n\n");
 		return FALSE;
 	}
-	strncpy( obj->port, port, sizeof(obj->port) );
+	if (port != obj->port)
+		strncpy( obj->port, port, sizeof(obj->port) );
 
 	if( obj->mode == AUTO )
 	{
@@ -219,8 +220,9 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 	if( obj->dbg_info->has_bootloader )
 	{
 		debugger_sw_ver = boot_run_app(obj);
-	
-		printf( "%s firmware version = 0x%02x\n",
+
+		if (obj->debug)
+			printf( "%s firmware version = 0x%02x\n",
 				obj->dbg_info->name,
 				debugger_sw_ver );
 	
@@ -387,6 +389,11 @@ void ec2_disconnect( EC2DRV *obj )
 	
 			c2_disconnect_target(obj);
 			write_usb_ch(obj, 0xff);	// turn off debugger
+			// Read and discard the response. Otherwise it can remain
+			// buffered on the EC3 and be unexpectedly returned to the
+			// next program that attempts to use the EC3.
+			read_usb_ch(obj);
+
 			r = usb_release_interface(obj->ec3, 0);
 			//assert(r == 0);
 			usb_reset(obj->ec3);
@@ -824,6 +831,7 @@ BOOL ec2_write_flash_auto_erase( EC2DRV *obj, uint8_t *buf,
 	// check if the flash is locked, in which case we need to do a complete
 	//   flash erase
 	if (flash_lock_byte(obj) != 0xff) {
+		printf("Flash is locked, erasing\n");
 		ec2_erase_flash (obj);
 	}
 	// otherwise we can just erase the sectors we will be writing to
@@ -1670,7 +1678,8 @@ void ec2_reset( EC2DRV *obj )
 		// fixme the following is unsafe for some caller to ec2_reset
 //		ec2_disconnect( obj );
 //		ec2_connect( obj, obj->port );
-		printf("ec2_reset C2\n");
+		if (obj->debug)
+			printf("ec2_reset C2\n");
 	}
 	DUMP_FUNC_END();
 }
@@ -2014,12 +2023,29 @@ static BOOL read_usb( EC2DRV *obj, char *buf, int len )
 	{
 		printf("RX: ");
 		print_buf(rxbuf,len+1);
+		if (r > 0)
+			print_buf(rxbuf,r);
+		else
+			printf("error %d\n", r);
 	}
-	memcpy( buf, rxbuf+1, len );
-	free( rxbuf );
+	if (r > 0) {
+		if (r != len + 1)
+		{
+			//fprintf(stderr, "WARNING: USB read len %d != expected len %d\n",
+			//	r, len + 1);
+		}
+		if (rxbuf[0] != len)
+		{
+			//fprintf(stderr, "WARNING: USB len byte %d != expected %d\n",
+			//	rxbuf[0], len);
+		}
+		memcpy( buf, rxbuf+1, len );
+	}
+	
 	if(r<0)
 		USB_ERROR("usb_interrupt_read",r);
 	//usleep(10);
+	free( rxbuf );
 	return r > 0;
 }
 
@@ -2189,7 +2215,7 @@ void close_ec3( EC2DRV *obj )
 
 
 
-/** Finc the debugger info tfor the sdpecified vendor id and product id.
+/** Find the debugger info for the specified vendor id and product id.
 	If both are -1 then the derial port EC2 is assumed.
 */
 DBG_ADAPTER_INFO *ec2_GetDbgInfo( uint16_t usb_vendor_id,
@@ -2202,8 +2228,8 @@ DBG_ADAPTER_INFO *ec2_GetDbgInfo( uint16_t usb_vendor_id,
 		if( debugger_info[i].usb_vendor_id == usb_vendor_id &&
 			debugger_info[i].usb_product_id == usb_product_id )
 		{
-			printf("ec2_GetDbgInfo(0x%04x,0x%04x)  %i\n",
-					usb_vendor_id,usb_product_id,i);
+			//printf("ec2_GetDbgInfo(0x%04x,0x%04x)  %i\n",
+			//		usb_vendor_id,usb_product_id,i);
 			return &debugger_info[i];
 		}
 //		else
