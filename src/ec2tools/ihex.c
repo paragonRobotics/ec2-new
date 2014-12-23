@@ -120,6 +120,7 @@ void ihex_load_file( char *filename, uint8_t *memory,
 		if (parse_hex_line(line, bytes, &addr, &n, &status))
 		{
 			if (status == 0) {  /* data */
+				//printf("Data = 0x%04x\n", (addr+offset) );
 				for(i=0; i<=(n-1); i++) {
 					memory[addr+offset] = bytes[i] & 255;
 					total++;
@@ -131,7 +132,7 @@ void ihex_load_file( char *filename, uint8_t *memory,
 			if (status == 1) {  /* end of file */
 				fclose(fin);
 				printf("   Loaded %d bytes between:", total);
-				printf(" %04X to %04X\n", minaddr, maxaddr);
+				printf(" %06X to %06X\n", minaddr, maxaddr);
 				*start = minaddr;
 				*end = maxaddr;
 				return;
@@ -145,7 +146,7 @@ void ihex_load_file( char *filename, uint8_t *memory,
 			}
 			if (status == 4)	/* Linear address record */
 			{
-				offset = (bytes[0]<<8)|bytes[1];	// upper 16 bits of address.
+				offset = ((bytes[0]<<8)|bytes[1])*256*256;	// upper 16 bits of address.
 				printf("Linear Address = 0x%04x\n", offset );
 			}
 		}
