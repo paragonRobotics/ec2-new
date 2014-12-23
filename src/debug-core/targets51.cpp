@@ -489,7 +489,7 @@ void TargetS51::read_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	parse_mem_dump( recvSim( 250 ), buf, len );
 }
 
-void TargetS51::read_code( uint16_t addr, int len, unsigned char *buf )
+void TargetS51::read_code( uint32_t addr, int len, unsigned char *buf )
 {
 	char cmd[16];
 	snprintf(cmd,16,"dch 0x%04x 0x%04x\n",addr, (addr+len-1) );

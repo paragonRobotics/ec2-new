@@ -91,17 +91,21 @@ int parse_hex_line( char *theline,
   */
 char ihex_load_file( const char *filename,
 					 char *memory,
-					 uint16_t *start,
-					 uint16_t *end  )
+					 uint32_t *start,
+					 uint32_t *end )
 {
 	char line[1000];
 	FILE *fin;
-	int addr, n, status, bytes[256];
-	int i, total=0, lineno=1;
-	int minaddr=65536, maxaddr=0;
-
+	uint32_t addr;
+	int status, bytes[256];
+	uint32_t n;
+	uint32_t i, total=0, lineno=1;
+	uint32_t minaddr=0x1FFFF, maxaddr=0;
+	uint32_t offset=0;
+	
 	if (strlen(filename) == 0) {
 		printf("   Can't load a file without the filename.");
+		printf("  '?' for help\n");
 		return 0;
 	}
 	fin = fopen(filename, "r");
@@ -109,19 +113,19 @@ char ihex_load_file( const char *filename,
 		printf("   Can't open file '%s' for reading.\n", filename);
 		return 0;
 	}
-	printf("   file '%s' is open for reading.\n", filename);
 	while (!feof(fin) && !ferror(fin)) {
 		line[0] = '\0';
 		fgets(line, 1000, fin);
 		if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0';
 		if (line[strlen(line)-1] == '\r') line[strlen(line)-1] = '\0';
-		if (parse_hex_line(line, bytes, &addr, &n, &status)) {
+		if (parse_hex_line(line, bytes, &addr, &n, &status))
+		{
 			if (status == 0) {  /* data */
 				for(i=0; i<=(n-1); i++) {
-					memory[addr] = bytes[i] & 255;
+					memory[addr+offset] = bytes[i] & 255;
 					total++;
-					if (addr < minaddr) minaddr = addr;
-					if (addr > maxaddr) maxaddr = addr;
+					if ((addr+offset) < minaddr) minaddr = addr+offset;
+					if ((addr+offset) > maxaddr) maxaddr = addr+offset;
 					addr++;
 				}
 			}
@@ -131,18 +135,29 @@ char ihex_load_file( const char *filename,
 				printf(" %04X to %04X\n", minaddr, maxaddr);
 				*start = minaddr;
 				*end = maxaddr;
-				return 1;	// success
+				return 1;
 			}
-			if (status == 2) ;  /* begin of file */
-		} else {
+			if( status==2 )  /* begin of file Extended address record */
+			{
+				uint32_t segment;
+				segment = (bytes[0]<<8)|bytes[1];	// upper 16 bits of address.
+				offset = segment<<4;
+				printf("Segment = 0x%04x, addr = 0x%08x\n", segment, offset );
+			}
+			if (status == 4)	/* Linear address record */
+			{
+				offset = ((bytes[0]<<8)|bytes[1])*256*256;
+				printf("Linear Address = 0x%04x\n", offset );
+			}
+		}
+		else
+		{
 			printf("   Error: '%s', line: %d\n", filename, lineno);
-			return 0;	// Failure
 		}
 		lineno++;
 	}
-	return 0;	// Failure
+	return 0;
 }
-
 
 /** Save a block of data an an intel hex file
   *
@@ -153,8 +168,8 @@ char ihex_load_file( const char *filename,
   */
 void ihex_save_file( const char *filename,
 					 char *memory,
-					 uint16_t start_addr,
-					 uint16_t len )
+					 uint32_t start_addr,
+					 uint32_t len )
 {
 	char *ptr;
 	int begin	= start_addr;

@@ -69,7 +69,7 @@ public:
 	virtual void read_sfr( uint8_t addr, uint8_t len, unsigned char *buf );
 	virtual void read_sfr( uint8_t addr, uint8_t page, uint8_t len, unsigned char *buf );
 	virtual void read_xdata( uint16_t addr, uint16_t len, unsigned char *buf );
-	virtual void read_code( uint16_t addr, int len, unsigned char *buf );
+	virtual void read_code( uint32_t addr, int len, unsigned char *buf );
 	virtual uint16_t read_PC();
 	
 	// memory writes

@@ -42,7 +42,7 @@ void Target::print_buf_dump( char *buf, int len )
 
 	for( addr=0; addr<len; addr += PerLine )
 	{
-		printf("%04x\t",(unsigned int)addr);
+		printf("%05x\t",(unsigned int)addr);
 		// print each hex byte		
 		for( i=0; i<PerLine; i++ )
 			printf("%02x ",(unsigned int)buf[addr+i]&0xff);
@@ -58,14 +58,16 @@ void Target::print_buf_dump( char *buf, int len )
 */
 bool Target::load_file( string name )
 {
-	uint16_t start, end;
-	char *buf = new char[0x10000];
+	uint32_t start, end;
+	char *buf = new char[0x20000];
 	// set all data to 0xff, since this is the default erased value for flash
-	memset(buf,0xff,0x10000);
+	memset(buf,0xff,0x20000);
 	cout << "Loading file '"<<name<<"'"<<endl;
 	if( buf && ihex_load_file( name.c_str(), buf, &start, &end) )
 	{
+		
 		print_buf_dump( buf, end-start );
+		printf("start %d %d\n",start,end);
 		write_code( start, end-start+1, (unsigned char*)&buf[start] );
 		delete buf;
 		return true;

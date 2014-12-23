@@ -20,9 +20,9 @@
 #include <iostream>
 #include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
 #include "targetsilabs.h"
 #include "ec2drv.h"
+#include <unistd.h>
 
 using namespace std;
 
@@ -169,6 +169,7 @@ void TargetSiLabs::run_to_bp(int ignore_cnt)
 	force_stop = false;
 	int i=0;
 	
+	//obj.debug = true;
 	do
 	{
 		//ec2_target_run_bp( &obj, &running );
@@ -202,6 +203,7 @@ void TargetSiLabs::go()
 */
 bool TargetSiLabs::poll_for_halt()
 {
+	//cout <<"Poll for halt....."<<endl;
 	return ec2_target_halt_poll( &obj );
 }
 
@@ -213,8 +215,8 @@ bool TargetSiLabs::is_running()
 
 void TargetSiLabs::stop()
 {
-	Target::stop();
 	cout <<"Stopping....."<<endl;
+	Target::stop();
 	running = FALSE;
 }
 
@@ -263,8 +265,9 @@ void TargetSiLabs::read_xdata( uint16_t addr, uint16_t len, unsigned char *buf )
 	ec2_read_xdata( &obj, (char*)buf, addr, len );
 }
 
-void TargetSiLabs::read_code( uint16_t addr, int len, unsigned char *buf )
+void TargetSiLabs::read_code( uint32_t addr, int len, unsigned char *buf )
 {
+	
 	ec2_read_flash( &obj, buf, addr, len );
 }
 

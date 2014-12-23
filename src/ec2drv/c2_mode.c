@@ -175,18 +175,26 @@ void c2_erase_flash( EC2DRV *obj )
 	DUMP_FUNC();
 	// generic C2 erase entire device
 	// works for EC2 and EC3
-		
+	printf("Start erase\n");
+	
 	// FIXME the disconnect / connect sequence dosen't work with the EC2 and C2 mode!
 	if( obj->dbg_adaptor==EC3 )
 	{
 		ec2_disconnect( obj );
 		ec2_connect( obj, obj->port );
 	}
+	printf("Start erase2\n");
 	flash_write_pre(obj);
+	printf("Start erase3\n");
 	write_port( obj, "\x3C",1);			// Erase entire device
+	printf("Start erase4\n");
 	read_port_ch(obj);					// 0x0d
+	printf("Start erase5\n");
 	flash_write_post(obj);
+	printf("Start erase6\n");
 	c2_special_write (obj, 0x8f, 0x00);
+	
+	printf("End erase\n");
 	if( obj->dbg_adaptor==EC3 )
 	{
 		ec2_disconnect( obj );
@@ -200,7 +208,10 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 {
 	DUMP_FUNC();
 	BOOL r;
+	int page = 1;
 	char cmd[2];
+	const SFRREG PSBANK	= { 0x00, 0x84 };
+	
 	flash_write_pre(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
@@ -212,9 +223,18 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 			c2_special_write (obj, 0x8f, 0x00);
 		}
 	}
+	
+	// set page for 128k bank devices
+	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+		page = (sector_addr&0xffff8000)>>15;
+		ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
+	}
+		
 	cmd[0] = 0x30;		// sector erase command
 	cmd[1] = sector_addr/ obj->dev->flash_sector_size;
 	r =  trx( obj, cmd, 2, "\x0d", 1 );
+
 	flash_write_post(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
@@ -247,9 +267,17 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 	// I this would complicate things, well just do 8 byte writes and then an
 	// fragment at the end.  This will need testing throughlerly as it is
 	// different to the IDE's action.
-	unsigned int i, addr;
-	char		 cmd[0x0c];
+	unsigned int i, addr,max,l,high;
+	int page = 1,tempPage=1;
+	char	cmd[0x12];
 	BOOL ok;
+	const SFRREG PSBANK	= { 0x00, 0x84 };
+			
+	// set page for 128k bank devices
+	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
+	}
 
 	flash_write_pre(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
@@ -263,15 +291,40 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 		}
 	}
 	cmd[0] = 0x2f;									// Write code/flash memory cmd	
-	for( i=0; i<len; i+=8 )
+
+	for( i=0; i<len;)
 	{
 		addr = start_addr + i;
-		cmd[1] = addr & 0xff;						// low byte
-		cmd[2] = (addr>>8) & 0xff;					// high byte
-		cmd[3] = (len-i)<8 ? (len-i) : 8;
-		memcpy( &cmd[4], &buf[i], cmd[3] );
+		
+		// figure out the max length up to 0x0c for this group
+		max = 0x8000 - (addr & 0x7fff);
+		
+		l = (max > 0x0c) ? 0x0c : max;
+		l = (len-i) > l ? l : (len-i);
+		
+		tempPage = (addr&0xffff8000)>>15;
+		if (tempPage != page){
+			page = tempPage;
+			// set page for 128k bank devices
+			if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+				ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
+			}
+		}
+		
+		cmd[1] = addr & 0xff;	// low byte
+		high = (addr >> 8) & 0xff;
+		if (page == 2){
+			high |= 0x80;
+		}
+		cmd[2] = high;
+		cmd[3] = l;
+		
+		memcpy( &cmd[4], &buf[addr - start_addr], l );
 		if( !trx( obj, cmd, cmd[3]+4, "\x0d", 1 ) )
 			return FALSE;							// Failure
+		
+		i+=l;
 	}
 
 	// estore origional condition
@@ -281,16 +334,24 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
+	
+	// set page for 128k bank devices
+	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
+	}
 	return TRUE;
 }
 
 
 BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOOL scratchpad )
 {
-	int i;
+	int i,l,max,high;
 	uint8_t cmd[10];
+	int page = 1,tempPage=1;
 	uint32_t addr;
-	
+	const SFRREG PSBANK	= { 0x00, 0x84 };
+
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
@@ -301,6 +362,13 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 			c2_special_write (obj, 0x8f, 0x00);
 		}
 	}
+	
+	// set page for 128k bank devices
+	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
+	}
+	
 	// C2 mode is much simpler
 	//
 	// example command 0x2E 0x00 0x00 0x0C
@@ -310,19 +378,48 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 	//					 |    +----(len-i)--------- Low byte of address
 	//					 +------------------ Flash read command
 	cmd[0] = 0x2E;
-	for( i=0; i<len; i+=0x0c )
+	for( i=0; i<len;  )
 	{
 		addr = start_addr + i;
+		
+		// figure out the max length up to 0x0c for this group
+		max = 0x8000 - (addr & 0x7fff);
+		
+		l = (max > 0x0c) ? 0x0c : max;
+		l = (len-i) > l ? l : (len-i);
+		
+		tempPage = (addr&0xffff8000)>>15;
+		if (tempPage != page){
+			page = tempPage;
+			// set page for 128k bank devices
+			if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+				ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
+			}
+		}
+		
 		cmd[1] = addr & 0xff;	// low byte
-		cmd[2] = (addr >> 8) & 0xff;
-		cmd[3] = (len-i) > 0x0c ? 0x0c : (len-i);
+		high = (addr >> 8) & 0xff;
+		if (page == 2){
+			high |= 0x80;
+		}
+		cmd[2] = high;
+		cmd[3] = l;
 		write_port( obj, (char*)cmd, 4 );
 		read_port( obj, (char*)buf+i, cmd[3]+1 );	// +1 for 0x0d
+
+		i+=l;
 	}
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
 		c2_special_write (obj, 0x8f, 0x00);
+	}
+	
+	// set page for 128k bank devices
+	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
 	}
 	return TRUE;
 }
@@ -449,7 +546,7 @@ BOOL c2_write_xdata_emif( EC2DRV *obj, char *buf, int start_addr, int len )
 	uint16_t block_len;
 	uint16_t addr = start_addr;
 	uint16_t cnt = 0;
-	char cmd[64];
+	char cmd[72];
 	const char cmd_len = 4;
 	BOOL ok=TRUE;
 	while( cnt<len )
@@ -482,7 +579,7 @@ BOOL c2_write_xdata_emif( EC2DRV *obj, char *buf, int start_addr, int len )
 
 void c2_read_ram( EC2DRV *obj, char *buf, int start_addr, int len )
 {
-	char tmp[4];
+	char tmp[6];
 	assert(obj->mode==C2);
 	
 	ec2_read_ram_sfr( obj, buf, start_addr, len, FALSE );
@@ -624,7 +721,7 @@ BOOL c2_write_xdata_F35x( EC2DRV *obj, char *buf, int start_addr, int len )
 	uint16_t block_len;
 	uint16_t addr = start_addr;
 	uint16_t cnt = 0;
-	char cmd[64];
+	char cmd[65];
 	const char cmd_len = 4;
 	BOOL ok=TRUE;
 	while( cnt<len )

@@ -8,13 +8,13 @@ extern "C" {
 
 char ihex_load_file( const char *filename,
 					 char *memory,
-					 uint16_t *start,
-					 uint16_t *end );
+					 uint32_t *start,
+					 uint32_t *end );
 
 void ihex_save_file( const char *filename,
 					 char *memory,
-					 uint16_t start_addr,
-					 uint16_t len );
+					 uint32_t start_addr,
+					 uint32_t len );
 
 void ihex_hexout( FILE *fhex,
 				  int byte,
