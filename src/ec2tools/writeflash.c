@@ -84,10 +84,11 @@ void exit_func(void)
 
 
 
+#define MAXPORTLEN 1024
 int main(int argc, char *argv[])
 {
 	uint8_t buf[0x20000];
-	char *port = NULL;
+	char port[MAXPORTLEN];
 	int in, cnt;
 	uint32_t start=0, end=0;
 	static int hex, bin, run, eraseall, debug, help_flag, scratch_flag;
@@ -123,7 +124,8 @@ int main(int argc, char *argv[])
 			case 0:		// set a flag, nothing to do
 				break;
 			case 'p':	// port
-                                port = optarg;
+				printf("port = %s\n",optarg);
+				strncpy( port, optarg, MAXPORTLEN );
 				break;
 			case 's':	// start address, for bin mode only
 				start = strtoul( optarg, 0, 0);
@@ -150,7 +152,7 @@ int main(int argc, char *argv[])
 	if(debug)
 		ec2obj.debug=TRUE;
 
-	if( help_flag || port == NULL || strlen(port)==0 )
+	if( help_flag || strlen(port)==0 )
 	{
 		help();
 		return  help_flag ? EXIT_SUCCESS : EXIT_FAILURE;
