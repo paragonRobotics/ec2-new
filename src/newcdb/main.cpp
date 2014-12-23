@@ -149,7 +149,7 @@ bool process_cmd_file( string filename )
 
 int main(int argc, char *argv[])
 {
-	sighandler_t	old_sig_int_handler;
+	void (*old_sig_int_handler)(int);
 
 	old_sig_int_handler = signal( SIGINT, sig_int_handler );
 	atexit(quit);
@@ -217,7 +217,11 @@ int main(int argc, char *argv[])
 
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
+#ifdef __GLIBC__
 		int c = getopt_long_only( argc, argv, "", long_options, &option_index);
+#else
+		int c = getopt_long(argc, argv, "", long_options, &option_index);
+#endif
 		/* Detect the end of the options. */
 		if( c == -1 )
 			break;

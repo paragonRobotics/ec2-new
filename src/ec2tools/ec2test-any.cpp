@@ -29,7 +29,7 @@ using namespace std;
 
 
 static EC2DRV obj;
-static sighandler_t old_sigint_handler;
+static void (*old_sigint_handler)(int);
 
 void help();
 void print_buf( char *buf, int len );
