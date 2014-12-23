@@ -1,16 +1,13 @@
 ec2drv Specific Information
 ===========================
 
-If you got the source from CVS:
+If you got the source from Git:
 -------------------------------
 
-make -f Makefile.cvs
+autoreconf -fvi
 ./configure
 make
 make install
-
-The make -f Makefile.cvs is required to rebuild several files needed for normal
-build operations.  This step is not necessary for the source tarballs.
 
 The make install step is not necessary for development as all
 executabless can be run from with the source tree where that were created.
@@ -28,11 +25,9 @@ General building notes:
 -----------------------
 Known dependancies:
 	GNU readline-dev	libreadline5-dev
-	BOOTS C++ Library	libboost-regx-dev
+	BOOST C++ Library	libboost-regx-dev
 	python2.4
 	libusb
-
-
 
 
 
