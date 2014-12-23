@@ -1,7 +1,0 @@
-# usb module         match_flags idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
-# Vivitar Vivicam 55
-#usbcam               0x0003      0x093a   0x010f    0x0000       0x0000      0x00         0x00            0x00            #0x00            0x00               0x00               0x00000000
-#
-# usb module         match_flags idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
-# for Silicon Labs EC3 we use the usbcam script for now...
-ec3               0x0003      0x10c4  0x8044    0x0000       0x0000      0x00         0x00            0x00            0x00            0x00               0x00               0x00000000

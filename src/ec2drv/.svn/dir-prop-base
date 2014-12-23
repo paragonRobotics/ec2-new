@@ -1,7 +1,0 @@
-K 10
-svn:ignore
-V 29
-device_table.c
-device_enum.h
-
-END
