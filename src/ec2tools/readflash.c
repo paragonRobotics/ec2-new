@@ -87,9 +87,6 @@ int main(int argc, char *argv[])
 	};
 	int option_index = 0;
 	int c, i;
-        BOOL r;
-
-        memset(buf, 0, sizeof buf);
 	
 	signal(SIGINT,exit);
 	atexit(exit_func);
@@ -134,7 +131,7 @@ int main(int argc, char *argv[])
 	if( debug)
 		obj.debug = TRUE;
 	
-	if( help_flag || port == NULL || strlen(port)==0 )
+	if( help_flag || strlen(port)==0 )
 	{
 		help();
 		return  help_flag ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -162,16 +159,9 @@ int main(int argc, char *argv[])
 	}
 	
 	if( scratch_flag )
-		r = ec2_read_flash_scratchpad( &obj, buf, start, length );
+		ec2_read_flash_scratchpad( &obj, buf, start, length );
 	else
-		r = ec2_read_flash( &obj, buf, start, length );
-
-        if ( ! r )
-        {
-		printf("ERROR: couldn't read flash\n");
-		ec2_disconnect( &obj );
-		exit(-1);
-        }
+		ec2_read_flash( &obj, buf, start, length );
 	
 	if( hex )
 	{
