@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
 	cmdlist.push_back( new CmdNext() );
 	cmdlist.push_back( new CmdNexti() );
 	cmdlist.push_back( new CmdContinue() );
+	cmdlist.push_back( new CmdDFile() );
 	cmdlist.push_back( new CmdFile() );
 	cmdlist.push_back( new CmdFiles() );
 	cmdlist.push_back( new CmdList() );

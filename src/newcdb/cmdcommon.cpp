@@ -350,6 +350,20 @@ bool CmdFile::direct( string cmd)
 	return gSession.target()->load_file(cmd+".ihx");
 }
 
+/** open a new cdb file for debugging, WITHOUT loading the firmware to the device
+	all associated files must be in the same directory
+*/	
+bool CmdDFile::direct( string cmd)
+{
+	gSession.modulemgr()->reset();
+	gSession.symtab()->clear();
+	gSession.symtree()->clear();	
+	gSession.bpmgr()->clear_all();
+
+	CdbFile cdbfile(&gSession);
+	cdbfile.open( cmd+".cdb" );
+	return true;
+}
 
 /** list a section of the program
 	list linenum

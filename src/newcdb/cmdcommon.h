@@ -121,6 +121,13 @@ class CmdFile : public CmdShowSetInfoHelp
 		bool direct( string cmd);
 };
 
+class CmdDFile : public CmdShowSetInfoHelp
+{
+	public:
+		CmdDFile()	{ name="dfile"; }
+		bool direct( string cmd);
+};
+
 class CmdList : public CmdShowSetInfoHelp
 {
 	public:
