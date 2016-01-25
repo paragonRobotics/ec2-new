@@ -82,7 +82,8 @@ static void flash_write_pre( EC2DRV *obj )
 	}
 	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031)))
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960))
 	{
 		char buf[5];
 		
@@ -215,7 +216,8 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	flash_write_pre(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -226,7 +228,8 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	
 	// set page for 128k bank devices
 	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 		page = (sector_addr&0xffff8000)>>15;
 		ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
 	}
@@ -238,7 +241,8 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 	flash_write_post(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+		DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	DUMP_FUNC_END();
@@ -275,14 +279,16 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 			
 	// set page for 128k bank devices
 	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
 	}
 
 	flash_write_pre(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -307,7 +313,8 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 			page = tempPage;
 			// set page for 128k bank devices
 			if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+					DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 				ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
 			}
 		}
@@ -331,13 +338,15 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 	flash_write_post(obj);
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+		DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	
 	// set page for 128k bank devices
 	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
 	}
 	return TRUE;
@@ -354,7 +363,8 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
 		}
@@ -365,7 +375,8 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 	
 	// set page for 128k bank devices
 	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
 	}
 	
@@ -393,7 +404,8 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 			page = tempPage;
 			// set page for 128k bank devices
 			if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+					DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 				ec2_write_paged_sfr( obj, PSBANK , (page<<4 | page) );
 			}
 		}
@@ -413,13 +425,15 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 	}
 	if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))) {
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
 	
 	// set page for 128k bank devices
 	if( DEVICE_IN_RANGE(obj->dev->unique_id, SI1020, SI1020)||
-			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)){
+			DEVICE_IN_RANGE(obj->dev->unique_id, SI1030, SI1030)||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960)){
 		ec2_write_paged_sfr( obj, PSBANK , 0x11 );
 	}
 	return TRUE;
@@ -1034,7 +1048,8 @@ void c2_write_breakpoints( EC2DRV *obj )
 	}
 	else if(( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F920, C8051F921 ))||
 		( DEVICE_IN_RANGE( obj->dev->unique_id, C8051F930, C8051F931 ))||
-		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031)))
+		( DEVICE_IN_RANGE( obj->dev->unique_id, SI1000, SI1031))||
+			DEVICE_IN_RANGE(obj->dev->unique_id, C8051F960, C8051F960))
 	{
 		//printf("New method");
 		const SFRREG BP_ACTIVE_REG	= { 0x01, 0xf4};

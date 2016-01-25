@@ -146,9 +146,9 @@ bool CdbFile::parse_record( string line )
 			// <$><Name><$><Level><$><Block><(><TypeRecord><)>
 			// <,><AddressSpace><,><OnStack><,><Stack><,><[><Reg><,>{<Reg><,>}<]> 
 			pos++;	// skip ':'
-			cout <<"%1%";
+			//cout <<"%1%";
 			parse_scope_name( line, sym, pos );
-			cout <<"%2%";
+			//cout <<"%2%";
 			pos++;
 			npos = line.find('$',pos);
 //			cout <<"level["<<line.substr( pos, npos-pos )<<"]"<<endl;
@@ -165,9 +165,9 @@ bool CdbFile::parse_record( string line )
 			// check if it already exsists
 			pSym = mSession->symtab()->getSymbol( sym );
 			
-			cout <<"%3%";
+			//cout <<"%3%";
 			parse_type_chain_record( line, *pSym, pos ); 
-			cout <<"%4%";
+			//cout <<"%4%";
 			pos++;	// skip ','
 //			cout <<"["<<line.substr(pos)<<"]"<<endl;
 //			cout <<"addr space = "<<line[pos]<<endl;
