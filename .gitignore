@@ -1,0 +1,16 @@
+# CMake generated files
+
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Binary output
+
+bin/
+lib/
+
+# Other generated files
+
+src/ec2drv/device_enum.h
+src/ec2drv/device_table.c

@@ -19,11 +19,11 @@
  ***************************************************************************/
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include <string.h>
 #include <ctype.h>
-#include <boost/format.hpp>
-#include <boost/tokenizer.hpp>
 #include <stdio.h>
+#include <unistd.h> // execl
 #include "types.h"
 #include "cmdcommon.h"
 #include "target.h"
@@ -35,9 +35,6 @@
 #include "newcdb.h"
 
 using namespace std;
-using boost::format;
-using boost::io::group;
-//using namespace boost::tokenizer;
 
 
 bool CmdVersion::show( string cmd )
@@ -538,23 +535,15 @@ bool CmdPrint::direct( string expr )
 	string sym_name = expr;
 	char format = 0;
 
+	// Split 'expr' into spaces. Read out the flag
+	std::stringstream ss(expr);
+	std::string item;
+	while (std::getline(ss, item, ' ')) {
+		if (item.length() == 2 && item[0] == '/')
+			format = item[1];
 
-	// split up into a list
-	typedef boost::tokenizer<boost::char_separator<char> > 
-			tokenizer;
-	boost::char_separator<char> sep(" \t");
-	tokenizer tokens(expr, sep);
-	int cnt=0;
-	for( tokenizer::iterator it = tokens.begin();
-			it != tokens.end(); ++it )
-	{
-		cnt++;
-		if( (*it)[0]=='/' && it->length()==2  )
-		{
-			format = (*it)[1];
-		}
 		// last token in the symbol name
-		sym_name = (*it);
+		sym_name = item;
 	}
 
 	int seperator_pos = sym_name.find_first_of(".[");

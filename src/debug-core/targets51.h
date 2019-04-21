@@ -29,7 +29,7 @@
 #include <iostream>
 using namespace std;
 
-#include <target.h>
+#include "target.h"
 
 /**	Target for debugging using the s51 simulator
 
