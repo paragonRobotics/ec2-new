@@ -204,7 +204,7 @@ void Symbol::print( char format )
 //	assert(1==0);	// oops unknown type
 }
 
-#include <boost/regex.hpp>
+#include <regex>
 #include <iostream>
 /** scan for a [ or a . indicating the end of the current element
 */
@@ -300,11 +300,11 @@ void Symbol::print( char format, std::string expr )
 //find_element_end("gfdgsdfg");
 
 	//boost::regex reg_array("^([a-z|0-9|_|-]+)\\x5b([a-z|0-9|_|-]+)\\x5d(.+)");
-	boost::regex reg_array("^([a-z|0-9|_|-]+)\\x5b([a-z|0-9|_|-]+)\\x5d(.*)");
-	boost::regex reg_child("^([a-z|0-9|_|-]+)\\.(.+)");
-	boost::smatch what;
+	std::regex reg_array("^([a-z|0-9|_|-]+)\\x5b([a-z|0-9|_|-]+)\\x5d(.*)");
+	std::regex reg_child("^([a-z|0-9|_|-]+)\\.(.+)");
+	std::smatch what;
 
-	if( boost::regex_match( expr, what, reg_array, boost::match_extra) )
+	if (std::regex_match(expr, what, reg_array))
 	{
 		// Array with index
 		// what[0] = all
@@ -329,7 +329,7 @@ void Symbol::print( char format, std::string expr )
 
  		}
 	}
-	else if( boost::regex_match( expr, what, reg_child, boost::match_extra) )
+	else if (std::regex_match(expr, what, reg_child))
 	{
 		// sub element, eg struct element.
 		// what[0] = all
