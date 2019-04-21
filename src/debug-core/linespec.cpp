@@ -23,7 +23,7 @@ using namespace std;
 #include "linespec.h"
 #include "symtab.h"
 #include "module.h"
-#include <breakpointmgr.h>
+#include "breakpointmgr.h"
 
 LineSpec::LineSpec( DbgSession *session )
 	: mSession(session)

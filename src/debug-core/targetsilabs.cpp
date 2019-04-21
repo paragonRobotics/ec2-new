@@ -18,10 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <iostream>
-#include <pthread.h>
 #include <stdio.h>
 #include "targetsilabs.h"
-#include "ec2drv.h"
 #include <unistd.h>
 
 using namespace std;
@@ -39,7 +37,6 @@ TargetSiLabs::TargetSiLabs()
 TargetSiLabs::~TargetSiLabs()
 {
 	running = false;
-	pthread_join( run_thread, NULL );	// wait for thread to stop
 }
 
 

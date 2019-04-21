@@ -20,7 +20,6 @@
 #ifndef TARGETSILABS_H
 #define TARGETSILABS_H
 #include <stdint.h>
-#include <pthread.h>
 #include "target.h"
 #include "ec2drv.h"
 
@@ -83,9 +82,7 @@ public:
 protected:
 	string	debugger_port;		// port the device is connected to.
 	EC2DRV	obj;
-	pthread_t	run_thread;		///< thread that manages a running target.
 	volatile BOOL		running;
-	static void *run_thread_func( void *ptr );
 	bool is_connected_flag;
 };
 
