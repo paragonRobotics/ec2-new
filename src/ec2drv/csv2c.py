@@ -19,7 +19,7 @@ def main():
 	parser.add_option("-c", "--output-cfile", type="string", dest="coutfile")
 	parser.add_option("-e", "--output-hfile", type="string", dest="houtfile")
 	(options, args) = parser.parse_args()
-	hfile = open(options.houtfile,"wb")
+	hfile = open(options.houtfile,"w")
 	hfile.writelines(
 	"///////////////////////////////////////////////////////////////////////////////////////////////\n" \
 	"//\n" \
@@ -29,7 +29,7 @@ def main():
 	"//\n" \
 	"//////////////////////////////////////////////////////////////////////////////////////////////\n\n")
 	
-	cfile = open(options.coutfile,"wb")
+	cfile = open(options.coutfile,"w")
 	cfile.writelines(
 	"///////////////////////////////////////////////////////////////////////////////////////////////\n" \
 	"//\n" \
@@ -40,7 +40,7 @@ def main():
 	"//////////////////////////////////////////////////////////////////////////////////////////////\n\n")
 	cfile.writelines("#include \"devices.h\"\n")
 	cfile.writelines("DEVICE devices[] =\n")
-	reader = csv.reader( open(options.infile, "rb") )
+	reader = csv.reader( open(options.infile, "r") )
 	i = 0;
 	for row in reader:
 		# Skip lines marked for exclusion
