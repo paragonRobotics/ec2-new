@@ -116,7 +116,7 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.usb_in_endpoint  = 0x81,
 	.has_bootloader	= TRUE,
 	.min_ver		= 0x07,
-	.max_ver		= 0x14
+	.max_ver		= 0x28
 	},
 	{
 	.name			= "ToolStick F330 DC",
