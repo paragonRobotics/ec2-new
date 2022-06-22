@@ -36,3 +36,18 @@ DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev )
 	return &unknown_dev;
 }
 
+DEVICE *getDeviceExact( uint8_t id, uint8_t unique_id)
+{
+	int i=0;
+	
+	//printf("id=0x%02x, unique_id=0x%02x\n",id, unique_id);
+	
+	do
+	{
+		if( (devices[i].id==id) && (devices[i].unique_id==unique_id) )
+			return &devices[i];
+	} while( devices[++i].name[0] != 0 );
+	
+	return &unknown_dev;
+}
+

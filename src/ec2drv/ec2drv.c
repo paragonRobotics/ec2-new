@@ -290,13 +290,17 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 			ec2_disconnect( obj );
 			exit(-1);
 		}
-		obj->dev = getDevice( idrev>>8, idrev&0xFF );
-		obj->dev = getDeviceUnique( unique_device_id(obj), 0);
-		ec2_target_reset( obj );
-		return TRUE;
+		//duplicated with below codes, should be removed.
+		//obj->dev = getDevice( idrev>>8, idrev&0xFF );
+		//obj->dev = getDeviceUnique( unique_device_id(obj), 0);
+		//ec2_target_reset( obj );
+		//return TRUE;
 	}
 	obj->dev = getDevice( idrev>>8, idrev&0xFF );
-	obj->dev = getDeviceUnique( unique_device_id(obj), 0);
+	if( idrev>>8 >= 0x32) // EFM8
+        	obj->dev = getDeviceExact( idrev>>8, unique_device_id(obj));
+        else
+        	obj->dev = getDeviceUnique(unique_device_id(obj), 0);
 	ec2_target_reset( obj );
 	return TRUE;
 }

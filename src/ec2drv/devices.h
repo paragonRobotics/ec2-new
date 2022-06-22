@@ -48,6 +48,7 @@ typedef struct
 
 DEVICE *getDevice( uint8_t id, uint8_t rev );
 DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev );
+DEVICE *getDeviceExact( uint8_t id, uint8_t unique_id );
 
 
 #define DEVICE_IN_RANGE( uid, start_uid, end_uid )	\
