@@ -10,7 +10,7 @@ ec2tools contain programs that use the core library to perform various actions.
 + ec2readflash - read the target flash memory.
 + ec2writeflash - write to the target flash memory.
 + ec2device - identify connected microprocessor
-+ ec3adapters - list all USB debug adaptors and their serial numbers (for both EC3 and toolstick debuggers)
++ ec3adapters - list all USB debug adaptors and their serial numbers
 + ec2readfw - read the debugger firmware image
 + ec2-update-fw - write new firmware into the debugger
 
