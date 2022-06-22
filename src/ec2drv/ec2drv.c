@@ -118,6 +118,8 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.min_ver		= 0x07,
 	.max_ver		= 0x28
 	},
+// toolstick not supported, verified.
+#if 0
 	{
 	.name			= "ToolStick F330 DC",
 	.usb_vendor_id	= 0x10c4,
@@ -126,6 +128,7 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.usb_in_endpoint  = 0x81,
 	.has_bootloader	= FALSE,
 	}
+#endif 
 };
 
 
