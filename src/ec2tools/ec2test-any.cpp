@@ -303,7 +303,9 @@ bool test_data_ram( EC2DRV &obj )
 		print_result(pass);
 	test_pass &= pass;
 	print_subtest("write / read odd addr");
-	for( int i=1; i<=0xff; i+=2 )
+	// 'volatile' to avoid compiler optimization,
+	// otherwise it will be infinite loop (test with gcc 12.1.1)
+	for( volatile int i=1; i<=0xff; i+=2 )
 	{
 		write_buf[i] = 0xAA;
 		ec2_write_ram( &obj, &write_buf[i], i, 1 );
