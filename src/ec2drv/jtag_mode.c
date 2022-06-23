@@ -772,7 +772,7 @@ void set_flash_addr_jtag( EC2DRV *obj, uint32_t addr )
 //	cmd[3] = 0x10;				// for F020
 //	cmd[3] = 0x11;				// for F120
 	// @FIXME detect fproper processor here andadjust
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F120, C8051F133 )) {
+	if(DEVICE_IN_RANGE( obj, C8051F120, C8051F133 )) {
 		// all devices in the F120 series seem to use this, even though the F13x chips
 		//   have only 0x1000 bytes of flash
 		cmd[3] = 0x11;
@@ -901,7 +901,7 @@ BOOL ec2_connect_jtag( EC2DRV *obj, const char *port )
 	
 	printf("Debug adaptor ver = 0x%02x\n",buf[0]);
 	ec2_target_reset( obj );
-	obj->dev = getDeviceUnique( unique_device_id(obj), 0);
+	obj->dev = getDeviceByIDAndDerivativeID( device_id(obj)>>8, unique_device_id(obj), 0);
 	
 	DUMP_FUNC_END();
 	return TRUE;
@@ -1156,7 +1156,7 @@ BOOL jtag_write_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	
 	// start writing to XDATA now
 	// write preamble
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		trx(obj,"\x03\x02\x2D\x01",4,"\x0D",1);
 	else
 		trx(obj,"\x03\x02\x2E\x01",4,"\x0D",1);
@@ -1165,7 +1165,7 @@ BOOL jtag_write_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	cmd[0] = 0x03;
 	cmd[1] = 0x02;
 
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		cmd[2] = 0x32;
 	else
 		cmd[2] = 0x31;
@@ -1191,7 +1191,7 @@ BOOL jtag_write_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 		trx( obj, (char*)cmd, 5, "\x0d", 1 );
 	}
 	//write postamble
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		trx(obj,"\x03\x02\x2D\x00",4,"\x0D",1);
 	else
 		trx(obj,"\x03\x02\x2E\x00",4,"\x0D",1);
@@ -1210,7 +1210,7 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	memset( buf, 0xff, len );	
 	assert( (start+len) <= 0x100 );		// must be in one page only
 	
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		trx( obj, "\x03\x02\x2D\x01", 4, "\x0D", 1 );
 	else
 		trx( obj, "\x03\x02\x2E\x01", 4, "\x0D", 1 );
@@ -1219,7 +1219,7 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 	cmd[0] = 0x03;
 	cmd[1] = 0x02;
 	
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		cmd[2] = 0x32;	// 31 for F120, 32 for F020
 	else
 		cmd[2] = 0x31;	// 31 for F120, 32 for F020
@@ -1240,7 +1240,7 @@ void jtag_read_xdata_page( EC2DRV *obj, char *buf, unsigned char page,
 		buf += cmd[3];
 	}
 	// close out XDATA read process...bug fix for bug #2024032
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F020, C8051F023 ))
+	if(DEVICE_IN_RANGE( obj, C8051F020, C8051F023 ))
 		trx( obj, "\x03\x02\x2D\x00", 4, "\x0D", 1 );
 	else
 		trx( obj, "\x03\x02\x2E\x00", 4, "\x0D", 1 );
@@ -1373,7 +1373,7 @@ BOOL jtag_addBreakpoint( EC2DRV *obj, uint8_t bp, uint32_t addr )
 	cmd[0] = 0x0D;
 	cmd[1] = 0x05;
 	cmd[2] = 0x90+bp;	// Breakpoint address register to write
-	if(DEVICE_IN_RANGE( obj->dev->unique_id, C8051F120, C8051F133 )) {
+	if(DEVICE_IN_RANGE( obj, C8051F120, C8051F133 )) {
 		// all devices in the F120 series seem to use this, even though the F13x chips
 		//   have only 0x1000 bytes of flash
 		cmd[3] = 0x11;		// 17 bits of address

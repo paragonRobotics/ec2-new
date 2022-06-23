@@ -36,7 +36,7 @@ DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev )
 	return &unknown_dev;
 }
 
-DEVICE *getDeviceExact( uint8_t id, uint8_t unique_id)
+DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev)
 {
 	int i=0;
 	
