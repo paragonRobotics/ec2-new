@@ -1,0 +1,3 @@
+ACTION!="add", SUBSYSTEM!="usb_device", GOTO="uda_rules_end"
+ATTR{idProduct}=="1053", ATTR{idVendor}=="1366", MODE="666"
+LABEL="uda_rules_end"
