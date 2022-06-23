@@ -297,7 +297,7 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 		//return TRUE;
 	}
 	obj->dev = getDevice( idrev>>8, idrev&0xFF );
-	if( idrev>>8 >= 0x32) // EFM8
+	if( (idrev>>8 == 0x25) || (idrev>>8 >= 0x32) ) // EFM8
         	obj->dev = getDeviceExact( idrev>>8, unique_device_id(obj));
         else
         	obj->dev = getDeviceUnique(unique_device_id(obj), 0);
