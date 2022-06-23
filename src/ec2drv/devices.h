@@ -57,11 +57,15 @@ DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev
 #define IS_EFM8( obj ) \
 	(device_id((obj))>>8 == 0x25 || device_id((obj))>>8 == 0x28 || device_id((obj))>>8 >= 32)
 
-// filter out EFM8 for 'duplicated' Unique ID, this is a workaround and hope to touch original codes minimum.
+// C8051F800 has same derivative ID as C8051F960
+#define IS_C8051F800( obj ) \
+       (device_id((obj))>>8 == 0x23 && ((obj->dev->unique_id) == 0xd0))
+
+// filter out EFM8 and C8051F800 for 'duplicated' Unique ID, this is a workaround and hope to touch original codes minimum.
 // 'DEVICE_IN_RANGE' was called many times to handle special situation for specific device, 
 // it's better not touch it now.
 #define DEVICE_IN_RANGE( obj, start_uid, end_uid )	\
-	(!IS_EFM8(obj) && ((obj->dev->unique_id)>=(start_uid)) && ((obj->dev->unique_id)<=(end_uid)))
+	(!IS_C8051F800(obj) && !IS_EFM8(obj) && ((obj->dev->unique_id)>=(start_uid)) && ((obj->dev->unique_id)<=(end_uid)))
 
 #include "device_enum.h"
 
