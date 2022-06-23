@@ -63,8 +63,6 @@ static uint8_t sfr_fixup( uint8_t addr );
 
 BOOL ec2_write_flash_jtag( EC2DRV *obj, char *buf,
 						   uint32_t start_addr, uint32_t len );
-uint16_t device_id( EC2DRV *obj );
-
 static BOOL check_flash_range( EC2DRV *obj, uint32_t addr, int len );
 static BOOL check_scratchpad_range( EC2DRV *obj, uint32_t addr, uint32_t len );
 
@@ -290,17 +288,26 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 			ec2_disconnect( obj );
 			exit(-1);
 		}
-		//duplicated with below codes, should be removed.
-		//obj->dev = getDevice( idrev>>8, idrev&0xFF );
-		//obj->dev = getDeviceUnique( unique_device_id(obj), 0);
-		//ec2_target_reset( obj );
-		//return TRUE;
 	}
-	obj->dev = getDevice( idrev>>8, idrev&0xFF );
-	if( (idrev>>8 == 0x25) || (idrev>>8 >= 0x32) ) // EFM8
-        	obj->dev = getDeviceExact( idrev>>8, unique_device_id(obj));
-        else
-        	obj->dev = getDeviceUnique(unique_device_id(obj), 0);
+	// original code of c2 mode need to call 'getDevice' first to match the closest but not exact device.
+	// in the following 'c2_unique_device_id' call, it will run some test code on 'obj'.
+	// comment it out now to address the 'duplicated' Unique ID issue.
+	// 
+	// The original design of 'device_table.csv' and 'getDevice', 'getDeviceUnique' has 
+	// misunderstanding of IDs of C8051/EFM8 devices and have 'duplicated' unique id issue.
+	// The original author comment out some devices in 'device_table.csv' to avoid this issue.
+	// 
+	// Actually, C8051/EFM8 has Device ID as 'Group ID', 
+	// and 'Derivative ID' (ec2 treat it as 'unique id', it's wrong) under 'Group ID',
+	// with 'Group ID + Derivative ID', we can identify the unique device.
+
+	// Please do NOT delete this comment, until we fix the 'duplicated' id issue completely.
+		
+	//obj->dev = getDevice( idrev>>8, idrev&0xFF );
+	
+	// Match device in device_table exactly, the correct DeviceID and DerivativeID must be provided,
+	// If no device matched, it will fall back to 'unknown device'.
+        obj->dev = getDeviceByIDAndDerivativeID( idrev>>8, unique_device_id(obj), 0);
 	ec2_target_reset( obj );
 	return TRUE;
 }
