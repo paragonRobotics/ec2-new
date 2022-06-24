@@ -45,7 +45,6 @@ typedef struct
 #endif
 } DEVICE;
 
-DEVICE *getDevice( uint8_t id, uint8_t rev );
 DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t derivative_id, uint8_t rev );
 BOOL device_in_range( DEVICE *dev, uint16_t start_device, uint16_t end_device );
 
