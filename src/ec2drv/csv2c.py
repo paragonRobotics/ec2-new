@@ -48,10 +48,10 @@ def main():
 			if i==0:
 				cfile.writelines("\t{{\n")
 				hfile.writelines("typedef enum {\n")
-				hfile.writelines("\t"+row[0]+" = "+row[2]);
+				hfile.writelines("\t"+row[0]+" = "+row[1]+row[2][2:]);
 			else:
 				cfile.writelines(",\n\t{\n");
-				hfile.writelines(",\n\t"+row[0]+" = "+row[2]);
+				hfile.writelines(",\n\t"+row[0]+" = "+row[1]+row[2][2:]);
 			
 			if row[23]!="":
 				cfile.writelines("\t\t// "+row[23]+"\n")

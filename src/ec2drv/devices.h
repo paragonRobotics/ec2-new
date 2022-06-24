@@ -47,25 +47,7 @@ typedef struct
 
 DEVICE *getDevice( uint8_t id, uint8_t rev );
 DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev );
-
-
-#include "ec2drv.h"
-
-// this still can NOT cover all EFM8 devices. for example, device id of EFM8SB2 is 0x16.
-// but until now, EFM8SB2 device information is not present in device_table.csv,
-// so it will not cause problem now.
-#define IS_EFM8( obj ) \
-	(device_id((obj))>>8 == 0x25 || device_id((obj))>>8 == 0x28 || device_id((obj))>>8 >= 32)
-
-// C8051F800 has same derivative ID as C8051F960
-#define IS_C8051F800( obj ) \
-       (device_id((obj))>>8 == 0x23 && ((obj->dev->unique_id) == 0xd0))
-
-// filter out EFM8 and C8051F800 for 'duplicated' Unique ID, this is a workaround and hope to touch original codes minimum.
-// 'DEVICE_IN_RANGE' was called many times to handle special situation for specific device, 
-// it's better not touch it now.
-#define DEVICE_IN_RANGE( obj, start_uid, end_uid )	\
-	(!IS_C8051F800(obj) && !IS_EFM8(obj) && ((obj->dev->unique_id)>=(start_uid)) && ((obj->dev->unique_id)<=(end_uid)))
+BOOL device_in_range( DEVICE *dev, uint16_t start_device, uint16_t end_device );
 
 #include "device_enum.h"
 
