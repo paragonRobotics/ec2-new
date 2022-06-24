@@ -87,8 +87,8 @@ bool TargetS51::connect()
 					signal(SIGINT , SIG_IGN );
 					signal(SIGABRT, SIG_IGN );
 					signal(SIGCHLD, SIG_IGN );
-					char *argv[] = {"s51","-Z9756","-tC52",0};
-					if( execvp("s51",argv) < 0 )
+					const char *argv[] = {"s51","-Z9756","-tC52",0};
+					if( execvp("s51",(char* const*)argv) < 0 )
 					{
 						perror("cannot exec simulator");
 						exit(1);
@@ -411,6 +411,7 @@ void TargetS51::run_to_bp(int ignore_cnt)
 
 bool TargetS51::is_running()
 {
+	return bRunning;
 }
 
 void TargetS51::stop()

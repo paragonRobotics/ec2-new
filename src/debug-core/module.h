@@ -122,7 +122,7 @@ public:
 	void reset();
 	Module &add_module( string mod_name );
 	Module &module( string mod_name )	{ return add_module(mod_name ); }	// fixme need a variant of this that won't create new entries as this quick hack does.
-	bool del_module( string mod_name );
+	void del_module( string mod_name );
 	const void dump();
 	bool get_asm_addr( ADDR addr, string &module, LINE_NUM &line );
 	bool get_c_addr( ADDR addr, string &module, LINE_NUM &line );

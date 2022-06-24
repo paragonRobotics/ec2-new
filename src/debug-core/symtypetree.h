@@ -296,7 +296,7 @@ public:
 
 	void dump();
 	void dump(std::string type_name);
-	bool add_type( SymType *ptype );
+	void add_type( SymType *ptype );
 //	bool get_type( std::string type_name,
 //				   std::string function,
 //				   std::string file,

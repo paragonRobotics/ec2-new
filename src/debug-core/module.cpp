@@ -265,7 +265,7 @@ Module &ModuleMgr::add_module( string mod_name )
 	return mMap[mod_name];
 }
 
-bool ModuleMgr::del_module( string mod_name )
+void ModuleMgr::del_module( string mod_name )
 {
 	mMap.erase( mod_name );
 }

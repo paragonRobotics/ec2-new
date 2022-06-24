@@ -1958,6 +1958,7 @@ static void print_buf( char *buf, int len )
 extern int usb_debug;		///< control libusb debugging
 
 #ifdef __GLIBC__
+#include <error.h>
 #define USB_ERROR(libusbfunc,num)					\
 	error_at_line(	-1,								\
 					 -num,							\
