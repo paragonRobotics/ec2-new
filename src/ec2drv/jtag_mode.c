@@ -901,7 +901,7 @@ BOOL ec2_connect_jtag( EC2DRV *obj, const char *port )
 	
 	printf("Debug adaptor ver = 0x%02x\n",buf[0]);
 	ec2_target_reset( obj );
-	obj->dev = getDeviceByIDAndDerivativeID( device_id(obj)>>8, derivative_id(obj), 0);
+	obj->dev = getDeviceByIDAndDerivativeID( jtag_device_id(obj)>>8, jtag_derivative_id(obj), 0);
 	
 	DUMP_FUNC_END();
 	return TRUE;
