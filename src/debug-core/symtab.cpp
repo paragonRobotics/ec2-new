@@ -398,6 +398,7 @@ bool SymTab::add_function_file_entry( string file_name, string func_name,
 	func_list.push_back(ent);
 	return true;
 #endif
+	return false;
 }
 
 bool SymTab::add_function_file_entry( string file_name, int line_num,

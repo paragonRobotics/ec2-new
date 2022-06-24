@@ -102,6 +102,7 @@ public:
 	*/
 	virtual bool poll_for_halt()
 	{
+		return false;
 	}
 
 	

@@ -104,6 +104,8 @@ bool CmdTBreak::directnoarg()
 
 bool CmdTBreak::help( string cmd )
 {
+	// TODO
+	return true;
 }
 
 bool CmdClear::direct( string cmd )

@@ -206,6 +206,9 @@ int BreakpointMgr::next_id()
 		if( ok )
 			return lowest;
 	}
+
+	// TODO
+	return 0;
 }
 
 

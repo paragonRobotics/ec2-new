@@ -87,7 +87,7 @@ void SymTypeTree::clear()
 }
 
 
-bool SymTypeTree::add_type( SymType *ptype )
+void SymTypeTree::add_type( SymType *ptype )
 {
 	m_types.push_back(ptype);
 }
@@ -183,6 +183,9 @@ std::string SymTypeTree::pretty_print( SymType *ptype,
 							std::string subpath )
 {
 	cout <<"Sorry Print not implemented for this type!"<<endl;
+
+	// TODO
+	return "";
 }
 
 
