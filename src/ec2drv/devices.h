@@ -9,7 +9,7 @@ typedef struct
 {
 	char		name[32];
 	uint8_t 	id;			// family
-	uint8_t 	unique_id;	// unique id, 1:1 map with chip name
+	uint8_t 	derivative_id;	// derivative id under family
 	uint8_t 	rev;		// -1 is any matching device id
 	uint32_t	flash_size;
 	uint16_t	flash_sector_size;
@@ -46,7 +46,7 @@ typedef struct
 } DEVICE;
 
 DEVICE *getDevice( uint8_t id, uint8_t rev );
-DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev );
+DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t derivative_id, uint8_t rev );
 BOOL device_in_range( DEVICE *dev, uint16_t start_device, uint16_t end_device );
 
 #include "device_enum.h"

@@ -30,7 +30,7 @@ uint16_t jtag_device_id( EC2DRV *obj )
 	return buf[2]<<8 | 0;	// no rev id known yet
 }
 
-uint16_t jtag_unique_device_id( EC2DRV *obj )
+uint16_t jtag_derivative_id( EC2DRV *obj )
 {
 	char buf[4];
 	//		trx(obj,"\x16\x01\xE0",3,"\x00",1);	// test
@@ -901,7 +901,7 @@ BOOL ec2_connect_jtag( EC2DRV *obj, const char *port )
 	
 	printf("Debug adaptor ver = 0x%02x\n",buf[0]);
 	ec2_target_reset( obj );
-	obj->dev = getDeviceByIDAndDerivativeID( device_id(obj)>>8, unique_device_id(obj), 0);
+	obj->dev = getDeviceByIDAndDerivativeID( device_id(obj)>>8, derivative_id(obj), 0);
 	
 	DUMP_FUNC_END();
 	return TRUE;

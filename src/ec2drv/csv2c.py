@@ -58,7 +58,7 @@ def main():
 				
 			cfile.writelines("\t\t\""+row[0]+"\",\t// Device Name\n")
 			cfile.writelines("\t\t"+row[1]+",\t\t\t// Device id (Family)\n")
-			cfile.writelines("\t\t"+row[2]+",\t\t\t// Device unique id\n")
+			cfile.writelines("\t\t"+row[2]+",\t\t\t// Derivative id\n")
 			cfile.writelines("\t\t"+row[3]+",\t\t\t// Device revision (-1 = any match\n")
 			cfile.writelines("\t\t"+row[5]+",\t\t\t// Flash Size (Marketing number)\n")
 			cfile.writelines("\t\t"+row[6]+",\t\t\t// Flash Sector Size\n")

@@ -290,7 +290,7 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 		}
 	}
 	// original code of c2 mode need to call 'getDevice' first to match the closest but not exact device.
-	// in the following 'c2_unique_device_id' call, it will run some test code on 'obj'.
+	// in the following 'c2_derivative_id' call, it will run some test code on 'obj'.
 	// comment it out now to address the 'duplicated' Unique ID issue.
 	// 
 	// The original design of 'device_table.csv' and 'getDevice', 'getDeviceUnique' has 
@@ -307,7 +307,7 @@ BOOL ec2_connect( EC2DRV *obj, const char *port )
 	
 	// Match device in device_table exactly, the correct DeviceID and DerivativeID must be provided,
 	// If no device matched, it will fall back to 'unknown device'.
-        obj->dev = getDeviceByIDAndDerivativeID( idrev>>8, unique_device_id(obj), 0);
+        obj->dev = getDeviceByIDAndDerivativeID( idrev>>8, derivative_id(obj), 0);
 	ec2_target_reset( obj );
 	return TRUE;
 }
@@ -369,17 +369,17 @@ uint16_t device_id( EC2DRV *obj )
 
 
 // identify the device, id = upper 8 bites, rev = lower 9 bits
-uint16_t unique_device_id( EC2DRV *obj )
+uint16_t derivative_id( EC2DRV *obj )
 {
 	DUMP_FUNC();
-	uint16_t unique_id=0xffff;	// invalid
+	uint16_t derivative_id=0xffff;	// invalid
 	if( obj->mode==C2 )
-		unique_id = c2_unique_device_id(obj);
+		derivative_id = c2_derivative_id(obj);
 	else if( obj->mode==JTAG )
-		unique_id = jtag_unique_device_id(obj);
+		derivative_id = jtag_derivative_id(obj);
 	
 	DUMP_FUNC_END();
-	return unique_id;
+	return derivative_id;
 }
 
 /** Disconnect from the EC2/EC3 releasing the serial port.

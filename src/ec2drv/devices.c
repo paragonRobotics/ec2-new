@@ -21,30 +21,15 @@ DEVICE *getDevice( uint8_t id, uint8_t rev )
 }
 
 
-DEVICE *getDeviceUnique( uint8_t unique_id, uint8_t rev )
-{
-	int i=0;
-	//printf("unique_id=0x%02x, rev=%02x\n",unique_id, rev);
-	do
-	{
-		if( (devices[i].unique_id==unique_id)&&(devices[i].rev==255) )
-			return &devices[i];
-		else if( (devices[i].unique_id==unique_id)&&(devices[i].rev==rev) )
-			return &devices[i];
-	} while( devices[++i].name[0] != 0 );
-	
-	return &unknown_dev;
-}
-
-DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev)
+DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t derivative_id, uint8_t rev)
 {
 	int i=0;
 	
-	//printf("id=0x%02x, unique_id=0x%02x\n",id, unique_id);
+	//printf("id=0x%02x, derivative_id=0x%02x\n",id, derivative_id);
 	
 	do
 	{
-		if( (devices[i].id==id) && (devices[i].unique_id==unique_id) )
+		if( (devices[i].id==id) && (devices[i].derivative_id==derivative_id) )
 			return &devices[i];
 	} while( devices[++i].name[0] != 0 );
 	
@@ -53,6 +38,6 @@ DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev
 
 BOOL device_in_range( DEVICE *dev, uint16_t start_id, uint16_t end_id )
 {
-	uint16_t dev_deriv_id = dev->id << 8 | dev->unique_id;
-	return (dev_deriv_id >= start_id && dev_deriv_id <= end_id);
+	uint16_t unique_id = dev->id << 8 | dev->derivative_id;
+	return (unique_id >= start_id && unique_id <= end_id);
 }

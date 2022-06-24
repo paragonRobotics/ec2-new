@@ -151,7 +151,7 @@ uint16_t c2_device_id( EC2DRV *obj )
 	return buf[0]<<8 | buf[1];
 }
 
-uint16_t c2_unique_device_id( EC2DRV *obj )
+uint16_t c2_derivative_id( EC2DRV *obj )
 {
 	char buf[3];
 	uint16_t dev_id;
