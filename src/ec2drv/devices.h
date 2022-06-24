@@ -19,7 +19,7 @@ typedef struct
 	FLASH_LOCK_TYPE	lock_type;
 	uint32_t	read_lock;
 	uint32_t	write_lock;
-	uint16_t	lock;			// single
+	uint32_t	lock;			// single
 	int32_t		flash_reserved_bottom;	// -1 = invalid
 	int32_t		flash_reserved_top;	// -1 = invalid
 	BOOL		has_scratchpad;
