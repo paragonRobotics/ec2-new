@@ -51,3 +51,8 @@ DEVICE *getDeviceByIDAndDerivativeID( uint8_t id, uint8_t unique_id, uint8_t rev
 	return &unknown_dev;
 }
 
+BOOL device_in_range( DEVICE *dev, uint16_t start_id, uint16_t end_id )
+{
+	uint16_t dev_deriv_id = dev->id << 8 | dev->unique_id;
+	return (dev_deriv_id >= start_id && dev_deriv_id <= end_id);
+}
