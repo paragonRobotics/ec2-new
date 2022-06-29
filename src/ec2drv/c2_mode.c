@@ -85,6 +85,7 @@ static void flash_write_pre( EC2DRV *obj )
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960))
 	{
 		char buf[5];
@@ -226,6 +227,7 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
@@ -253,6 +255,7 @@ BOOL c2_erase_flash_sector( EC2DRV *obj, uint32_t sector_addr,
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 		device_in_range( obj->dev, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
@@ -301,6 +304,7 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
@@ -354,6 +358,7 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 		device_in_range( obj->dev, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
@@ -381,6 +386,7 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960)) {
 		if (scratchpad) {
 			c2_special_write (obj, 0x8f, 0x04);
@@ -445,6 +451,7 @@ BOOL c2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BOO
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960)) {
 		c2_special_write (obj, 0x8f, 0x00);
 	}
@@ -1070,6 +1077,7 @@ void c2_write_breakpoints( EC2DRV *obj )
 		( device_in_range( obj->dev, SI1000, SI1001))||
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
+		( device_in_range( obj->dev, C8051F990, C8051F990))||
 			device_in_range( obj->dev, C8051F960, C8051F960))
 	{
 		//printf("New method");
