@@ -21,9 +21,6 @@
 using namespace std;
 #include "types.h"
 #include "parsecmd.h"
-#include "cmdcommon.h"
-
-
 
 ParseCmd::ParseCmd()
 {
@@ -60,25 +57,20 @@ bool ParseCmd::match( const string &token, const string &mask )
 	return token.compare(mask)==0;
 }
 
-const ParseCmd *CmdShowSetInfoHelp::cmds[] =
-{
-	new CmdVersion()
-};
-
-
-
-CmdShowSetInfoHelp::CmdShowSetInfoHelp()
+CmdTemplate::CmdTemplate()
 {
 	name = "help";
 //	mdlist.push_back( new CmdHelp() );
 	//cmdlist.push_back( new CmdVersion() );
 }
 
-CmdShowSetInfoHelp::~CmdShowSetInfoHelp()
+CmdTemplate::~CmdTemplate()
 {
 }
 
-bool CmdShowSetInfoHelp::parse( string cmd )
+#include "utils.h"
+
+bool CmdTemplate::parse( string cmd )
 {
 	enum { SET, SHOW, INFO, HELP } mode;
 	int ofs;
@@ -109,7 +101,7 @@ bool CmdShowSetInfoHelp::parse( string cmd )
 		{
 //			cout <<"MATCH + space"<<endl;
 			cmd = cmd.substr( ofs+1 );
-			return direct( cmd );
+			return direct( trim(cmd) );
 		}
 		else
 		{
@@ -128,7 +120,7 @@ bool CmdShowSetInfoHelp::parse( string cmd )
 //		cout <<"mode ["<<cmd<<"]"<<endl;
 		switch(mode)
 		{
-			case SET:	return set(cmd);
+			case SET:	  return set(cmd);
 			case SHOW:	return show(cmd);
 			case INFO:	return info(cmd);
 			case HELP:	return help(cmd);
@@ -141,7 +133,7 @@ bool CmdShowSetInfoHelp::parse( string cmd )
 	parsing stops at first space or '/'
 	\returns -1 if no match otherwise the length of characters of the tag
 */
-int CmdShowSetInfoHelp::compare_name( string s )
+int CmdTemplate::compare_name( string s )
 {
 	// upper case letters in name at the start represent the shortest form of the command supported.
 	// we will only match is at least thase are correct and any following characters match

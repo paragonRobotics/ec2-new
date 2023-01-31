@@ -43,13 +43,13 @@ DbgSession::DbgSession(
 				ModuleMgr *dbg_modulemgr )
 	: 	mTarget(0)
 {
-	std::cout << "====================== DbgSession Constructor =========================" << endl;
+//	std::cout << "====================== DbgSession Constructor =========================" << endl;
 	mSymTab = dbg_symtab ? dbg_symtab : new SymTab(this);
 	mSymTree = dbg_symtypetree ? dbg_symtypetree : new SymTypeTree(this);
 	mContextMgr = dbg_contextmgr ? dbg_contextmgr : new ContextMgr(this);
 	mBpMgr = dbg_bpmgr ? dbg_bpmgr : new BreakpointMgr(this);
 	mModuleMgr = dbg_modulemgr ? dbg_modulemgr : new ModuleMgr();
-	cout <<"constructor this="<<this<<endl;
+//	cout <<"constructor this="<<this<<endl;
 	Target *t;
 	TargetDummy();
 	mTarget = add_target( new TargetDummy() );
@@ -72,7 +72,7 @@ bool DbgSession::SelectTarget( std::string name )
 		return false;	// failure
 	if( target() )
 	{
-		cout << "current target "<<target()->target_name()<<endl;
+	//	cout << "current target "<<target()->target_name()<<endl;
 		if( target()->is_connected() )
 		{
 			mBpMgr->clear_all();

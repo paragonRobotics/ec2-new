@@ -209,6 +209,7 @@ ADDR Module::get_c_addr( LINE_NUM line )
 
 ADDR Module::get_asm_addr( LINE_NUM line )
 {
+  //printf("%s: %04x\n", asm_src[line-1].src.c_str(), asm_src[line-1].addr);
 	return asm_src[line-1].addr;
 }
 
@@ -290,7 +291,12 @@ void dump_module(const pair<string,Module>& pr)
 */
 const void ModuleMgr::dump()
 {
-//	for_each( mMap.begin(), mMap.end(), dump_module );
+  ModMap::iterator it;
+  // for each module
+  for( it=mMap.begin(); it!=mMap.end(); ++it )
+  {
+		dump_module(*it);
+	}
 }
 
 

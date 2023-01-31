@@ -45,17 +45,16 @@ public:
 	bool match( const string &token, const string &mask );
 };
 
-class CmdShowSetInfoHelp : public ParseCmd
+class CmdTemplate : public ParseCmd
 {
 public:
-	CmdShowSetInfoHelp();
-	~CmdShowSetInfoHelp();
+	CmdTemplate();
+	~CmdTemplate();
 	virtual bool parse( string cmd );
 	
 protected:
 	string name;
 	virtual int compare_name( string s );
-	static const ParseCmd *cmds[];
 	virtual bool help(string cmd )			{ return false; }
 	virtual bool set( string cmd )			{ return false; }
 	virtual bool show( string cmd )			{ return false; }

@@ -27,7 +27,7 @@ using namespace std;
 TargetSiLabs::TargetSiLabs()
   :	Target(),
 	running(false),
-	debugger_port("/dev/ttyS0"),
+	debugger_port("USB"),
 	is_connected_flag(false)
 {
 	obj.mode=AUTO;
@@ -85,7 +85,7 @@ string TargetSiLabs::target_name()
 
 string TargetSiLabs::target_descr()
 {
-	return "Silicon Laboritories Debug adapter EC2 / EC3";
+	return "Silicon Lab Debugger";
 }
 
 string TargetSiLabs::device()
@@ -142,14 +142,15 @@ uint16_t TargetSiLabs::step()
 }
 
 bool TargetSiLabs::add_breakpoint(uint16_t addr)
-{	cout << "adding breakpoint to silabs device" << endl;
+{	
+  //cout << "adding breakpoint to silabs device" << endl;
 	ec2_addBreakpoint( &obj, addr );
 	return true;
 }
 
 bool TargetSiLabs::del_breakpoint(uint16_t addr)
 {
-	cout << "bool TargetSiLabs::del_breakpoint(uint16_t addr)" << endl;
+//	cout << "bool TargetSiLabs::del_breakpoint(uint16_t addr)" << endl;
 	return ec2_removeBreakpoint( &obj, addr );
 }
 

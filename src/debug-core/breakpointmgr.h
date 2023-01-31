@@ -107,7 +107,9 @@ public:
 		\returns true on success, false on failurew (invalid BPID)
 	*/
 	bool get_bp_file_line( BP_ID id, string &file, int &line );
-	
+
+  bool is_stopped() {return stopflag;};
+  void clear_stopped() {stopflag = false;};	
 protected:
 	DbgSession *mSession;
 	typedef struct
@@ -128,6 +130,8 @@ protected:
 
 	bool add_target_bp( ADDR addr );
 	bool del_target_bp( ADDR addr );
+  bool stopflag;
+
 };
 
 

@@ -214,7 +214,7 @@ int32_t SymTab::get_addr( string file, int line_num )
 		for( it=c_file_list.begin(); it!=c_file_list.end(); ++it)
 			if( (*it).file_id == fid && (*it).line_num==line_num )
 				return (*it).addr;
-		cout <<" Error: "<<file<<" line number not found"<<endl;
+		//cout <<" Error: "<<file<<" line number not found"<<endl;
 	}
 	else if( file.substr(file.length()-4).compare(".asm")==0 ||
 			 file.substr(file.length()-4).compare(".a51")==0 )
@@ -222,7 +222,7 @@ int32_t SymTab::get_addr( string file, int line_num )
 		for( it=asm_file_list.begin(); it!=asm_file_list.end(); ++it)
 			if( (*it).file_id == fid && (*it).line_num==line_num )
 				return (*it).addr;
-		cout <<" Error: "<<file<<" line number not found"<<endl;
+		//cout <<" Error: "<<file<<" line number not found"<<endl;
 	}
 	else
 	{
@@ -505,12 +505,12 @@ bool SymTab::get_c_function( ADDR addr,
 				
 				return true;
 			}
-//			printf("%-20s  %-20s  0x%08x  0x%08x\n",
-//				   (*it).file().c_str(),
-//				   (*it).name().c_str(),
-//				   (*it).addr(),
-//				   (*it).endAddr()
-//				  );
+			printf("%-20s  %-20s  0x%08x  0x%08x\n",
+				   (*it).file().c_str(),
+				   (*it).name().c_str(),
+				   (*it).addr(),
+				   (*it).endAddr()
+				  );
 		}
 	}
 	return false;

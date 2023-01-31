@@ -159,6 +159,8 @@ public:
 							BLOCK &block,
 							LEVEL &level );
 
+  vector<string> get_file_map() {return file_map;}
+
 protected:
 	SYMLIST m_symlist;
 	typedef struct

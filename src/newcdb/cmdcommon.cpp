@@ -23,7 +23,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <unistd.h> // execl
+#include <unistd.h>
+#include <limits.h>
+#include <fstream>
+#include <limits>
+
+
 #include "types.h"
 #include "cmdcommon.h"
 #include "target.h"
@@ -34,62 +39,10 @@
 #include "contextmgr.h"
 #include "newcdb.h"
 
+#include "utils.h"
+
 using namespace std;
 
-
-bool CmdVersion::show( string cmd )
-{
-	if(cmd.length()==0)
-	{
-		cout << "\nVersion 0.1 (jelly)\n"
-			 << "Compiled on "<<__DATE__<<" at "<<__TIME__<<"\n"
-			 << endl;
-		return true;
-	}
-	return false;
-}
-
-bool CmdWarranty::show( string cmd )
-{
-	if(cmd.length()==0)
-	{	
-		cout << "                            NO WARRANTY\n"
-		"\n"
-		"  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY\n"
-		"FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN\n"
-		"OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES\n"
-		"PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED\n"
-		"OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF\n"
-		"MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS\n"
-		"TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE\n"
-		"PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,\n"
-		"REPAIR OR CORRECTION.\n"
-		"\n"
-		"  12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING\n"
-		"WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR\n"
-		"REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,\n"
-		"INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING\n"
-		"OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED\n"
-		"TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY\n"
-		"YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER\n"
-		"PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE\n"
-		"POSSIBILITY OF SUCH DAMAGES.\n"
-		"\n";
-		return true;
-	}
-	return false;
-}
-
-bool CmdCopying::show( string cmd )
-{
-//	string s = getenv("_");
-	if( cmd.length()==0 )
-	{
-		execl("/usr/bin/less","less","copying",NULL);
-		return true;
-	}
-	return false;	
-}
 
 /** top level help
 */
@@ -97,112 +50,48 @@ bool CmdHelp::parse( string cmd )
 {
 	if( cmd.compare("help")==0 )
 	{
-		printf("Help\n\n");
-		cout << "List of classes of commands:\n"
-				"\n"
-				"breakpoints -- Making program stop at certain points\n"
-				"data -- Examining data\n"
-				"files -- Specifying and examining files\n"
-				"running -- Running the program\n"
-				"stack -- Examining the stack\n"
-				"status -- Status inquiries\n"
-				<<endl;
+    cout << "Please refer to:" <<endl
+         << endl
+         << "help target:      setup/connect to target device"<<endl
+         << "help breakpoints: add/delete breakpoints" <<endl
+         << "help readwrite:   read/write Rn/SFR/bit and memory address" <<endl
+         << "help disassemble: disassemble a speficied section" <<endl
+         << "help control:     run/step/continue the program" <<endl
+         << "help info:      query various information" <<endl
+         << "help file:        load and list files" <<endl
+				 <<endl;
 		return true;
 	}
 	return false;
 }
 
-
-/** Redirect commands directly to the target driver
-	Ideaslly not much should be done through this interface in the interest of
-	portability to other targer devices
-*/
-bool CmdTarget::direct( string cmd )
+bool CmdControl::help(string cmd)
 {
-	return gSession.target()->command( cmd );
+  cout << "Run/step/continue the program" <<endl
+       << endl
+       << "Please refer to:"<<endl
+       << endl
+       << "help run:      to read value of PC" <<endl
+       << "help step:     to step one instruction/function" <<endl
+       << "help stepi:    to step one ASM instruction" <<endl
+       << "help next:     same as 'step'" <<endl
+       << "help nexti:    same as 'stepi'" <<endl
+       << "help continue: to continue execution from the current address" <<endl;
+  return true;
 }
 
-bool CmdTarget::set( string cmd )
+bool CmdInfo::help(string cmd)
 {
-	if( cmd.find("port ")==0 )
-	{
-		cout << "set port '" <<cmd.substr(5)<<"'"<< endl;
-		gSession.target()->set_port(cmd.substr(5));
-		return true;
-	}
-	else if( cmd.find("device ")==0 )
-	{
-		cout << "set device"<<cmd<< endl;
-		return true;
-	}
-	else if( cmd.compare("connect")==0 )
-	{
-		if( gSession.target() )
-		{
-			gSession.target()->connect();
-			return true;
-		}
-		else
-		{
-			cout	<< "ERROR you must select a target first." << endl
-					<< "for silicon labs debuggers		     set target SL51" << endl
-					<< "for the s51 simulator			     set target S51" 	<< endl
-					<< endl;
-			return false;
-		}
-	}
-	else if( cmd.compare("disconnect")==0 )
-	{
-		gSession.target()->disconnect();
-		return true;
-	}
-	else
-	{
-		if( gSession.SelectTarget(cmd) )
-		{
-			// disconnect from current target and select new one
-			// Don't connect yet, user probably needs to setup ports before cmmanding a connect
-			return true;
-		}
-	}
-	return false;
-}
-
-bool CmdTarget::info( string cmd )
-{
-	if( cmd.find("port")==0 )
-	{
-		cout <<"port = \""<<"/dev/ttyS0"<<"\"."<<endl;
-		return true;
-	}
-	else if( cmd.find("device")==0 )
-	{
-		cout <<"device = \""<<"80C51"<<"\"."<<endl;
-		return true;
-	}
-	else if( cmd.length()==0 )
-	{
-		cout <<"Target = '"<<gSession.target()->target_name()<<"'\t"
-				<<"'"<<gSession.target()->target_descr()<<"'"<<endl;
-		cout <<"Port = '"<<gSession.target()->port()<<"'"<<endl;
-		cout <<"Device = '"<<gSession.target()->device()<<"'"<<endl;
-		printf("PC = 0x%04x\n",gSession.target()->read_PC());
-		
-		gSession.contextmgr()->dump();
-		return true;
-	}
-	return false;
-}
-
-bool CmdTarget::show( string cmd )
-{
-	if( cmd.compare("connect")==0 )
-	{
-		cout << (gSession.target()->is_connected() ? 
-				"Connected." : "Disconnected.") << endl;
-		return true;
-	}
-	return false;
+  cout << "Display various information" <<endl
+       << endl
+       << "info target:     to display target device information" <<endl
+       << "info registers:  to list important registers and their values" <<endl
+       << "info functions:  to display function information of current project" <<endl
+       << "info line:       to display source line information of current context"<<endl
+       << "info source:     to display source file of current context"<<endl
+       << "info sources:    to list source files of current project" <<endl
+       << "print <SYMBOL>:  to display SYMBOL type and addr" <<endl;
+  return true;
 }
 
 
@@ -210,22 +99,40 @@ bool CmdTarget::show( string cmd )
 */
 bool CmdStep::directnoarg()
 {
-	string module;
-	LINE_NUM line;
-	ADDR addr;
-	// keep stepping over asm instructions until we hit another c function
-	do
-	{
-		addr = gSession.target()->step();
-		gSession.bpmgr()->stopped(addr);
-		gSession.contextmgr()->set_context(addr);
+  //ASM MODE, run next instruction.
+  if(gSession.contextmgr()->get_current().mode == 0)
+  {
+    ADDR addr = gSession.target()->step();
+    gSession.bpmgr()->stopped(addr);
+    gSession.contextmgr()->set_context(addr);
+    gSession.contextmgr()->dump();
+  } else { //C MODE, do loop until hit another c function.
+	  string module;
+	  LINE_NUM line;
+	  ADDR addr;
+	  // keep stepping over asm instructions until we hit another c function
+	  do
+	  {
+	  	addr = gSession.target()->step();
+	  	gSession.bpmgr()->stopped(addr);
+	  	gSession.contextmgr()->set_context(addr);
+	  }
+	  while( !gSession.modulemgr()->get_c_addr( addr, module, line ) && 
+	  		   !gSession.target()->check_stop_forced());
+	  gSession.contextmgr()->dump();
 	}
-	while( !gSession.modulemgr()->get_c_addr( addr, module, line ) && 
-			   !gSession.target()->check_stop_forced());
-	gSession.contextmgr()->dump();
 	return true;
 }
 
+bool CmdStep::help(string cmd)
+{
+  cout << "Step one instruction/function" <<endl
+       << endl
+       << "step: "<<endl
+       << "- step one instruction for asm source" <<endl
+       << "- step one function for c source" <<endl;
+  return true;
+}
 /** cause the target to step one assembly level instruction
  */
 bool CmdStepi::directnoarg()
@@ -235,6 +142,14 @@ bool CmdStepi::directnoarg()
 	gSession.contextmgr()->set_context(addr);
 	gSession.contextmgr()->dump();
 	return true;
+}
+
+bool CmdStepi::help(string cmd)
+{
+  cout << "Step one instruction" <<endl
+       << endl
+       << "stepi: step one ASM instruction" <<endl;
+  return true;
 }
 
 /** Continue to the next source line in the current (innermost) stack frame.
@@ -248,19 +163,39 @@ bool CmdStepi::directnoarg()
 */
 bool CmdNext::directnoarg()
 {
-	string module;
-	LINE_NUM line;
-	ADDR addr;
-	// keep stepping over asm instructions until we hit another c function
-	do
-	{
-		addr = gSession.target()->step();
-		gSession.bpmgr()->stopped(addr);
-		gSession.contextmgr()->set_context(addr);
-	}
-	while( !gSession.modulemgr()->get_c_addr( addr, module, line ) );
-	gSession.contextmgr()->dump();
+  //ASM MODE, run next instruction.
+  if(gSession.contextmgr()->get_current().mode == 0)
+  {
+    ADDR addr = gSession.target()->step();
+    gSession.bpmgr()->stopped(addr);
+    gSession.contextmgr()->set_context(addr);
+    gSession.contextmgr()->dump();
+    return true;
+  } else { //C MODE, do loop until hit another c function.
+	  string module;
+	  LINE_NUM line;
+	  ADDR addr;
+	  // keep stepping over asm instructions until we hit another c function
+	  do
+	  {
+	  	addr = gSession.target()->step();
+	  	gSession.bpmgr()->stopped(addr);
+	  	gSession.contextmgr()->set_context(addr);
+	  }
+	  while( !gSession.modulemgr()->get_c_addr( addr, module, line ) );
+	  gSession.contextmgr()->dump();
+  }
 	return true;
+}
+
+bool CmdNext::help(string cmd)
+{
+  cout << "As same as 'step', step one instruction/function" <<endl
+       << endl
+       << "next: "<<endl
+       << "- step one instruction for asm source" <<endl
+       << "- step one function for c source" <<endl;
+  return true;
 }
 
 /** Execute one machine instruction, but if it is a function call, proceed until
@@ -277,6 +212,13 @@ bool CmdNexti::directnoarg()
 	return true;
 }
 
+bool CmdNexti::help(string cmd)
+{
+  cout << "As same as 'stepi', step one instruction" <<endl
+       << endl
+       << "stepi: step one ASM instruction" <<endl;
+  return true;
+}
 
 /**	Continue execution from the current address
 	if there is a breakpoint on the current address it is ignored.
@@ -285,6 +227,11 @@ bool CmdNexti::directnoarg()
 bool CmdContinue::direct( string cmd )
 {
 	printf("Continuing.\n");
+  if(!is_digit(cmd))
+  {
+    printf("Wrong argument %s, please specify a correct breakpoint number to run to\n", cmd.c_str());
+    return true;
+  }
 	int i = strtoul( cmd.c_str(), 0, 0);
 	
 	gSession.target()->run_to_bp(i);
@@ -305,6 +252,16 @@ bool CmdContinue::directnoarg()
 	gSession.contextmgr()->dump();
 	return true;
 }
+
+bool CmdContinue::help(string cmd)
+{
+  cout << "Continue execution from the current address" <<endl
+       << endl
+       << "continue: run to next breakpoint" <<endl
+       << "continue [NUM]: run to breakpoint NUM" <<endl;
+  return true;
+}
+
 
 /** Reset the target abnd reload the breakpoints as necessary
 */
@@ -327,12 +284,47 @@ bool CmdRun::directnoarg()
 	return true; 
 }
 
-
+bool CmdRun::help(string cmd)
+{
+  cout << "Reset target, reload breakpoints and run" <<endl
+       << "run:   run program" <<endl;
+  return true;
+}
 /** open a new cdb file for debugging
 	all associated files must be in the same directory
 */	
-bool CmdFile::direct( string cmd)
+bool CmdFile::direct( string argstr)
 {
+  if(!gSession.target()->is_connected())
+  {
+    return true;
+  }
+
+  string cdbfilename = trim(argstr);
+
+  if(!cdbfilename.find("."))
+  {
+    cout <<cdbfilename <<" is illegal cdbfile name." <<endl;
+    return true;
+  }
+
+  if(access(cdbfilename.c_str(), F_OK ) == -1)
+  {
+    cout <<cdbfilename<<" not exist."<<endl; 
+    return true;
+  }
+  
+  vector<string> fv = split(cdbfilename,'.');
+  
+  string ihxfilename = fv[0] + ".ihx";
+
+
+  if(access(ihxfilename.c_str(), F_OK ) == -1)
+  {
+    cout <<ihxfilename<<" not exist."<<endl; 
+    return true;
+  }
+
 	gSession.modulemgr()->reset();
 	gSession.symtab()->clear();
 	gSession.symtree()->clear();	
@@ -343,22 +335,49 @@ bool CmdFile::direct( string cmd)
 	gSession.target()->disconnect();
 	gSession.target()->connect();
 	CdbFile cdbfile(&gSession);
-	cdbfile.open( cmd+".cdb" );
-	return gSession.target()->load_file(cmd+".ihx");
+	cdbfile.open(cdbfilename);
+	gSession.target()->load_file(ihxfilename);
+
+  return true;
 }
 
+bool CmdFile::help(string cmd)
+{
+  cout << "Open cdb file for debugging" <<endl
+       << endl
+       << "file <filename>.cdb: open <filename>.cdb for debugging" <<endl
+       << "- NOTE: All associated files must be in the same directory" <<endl
+       << endl
+       << "To list source files, refer to:" <<endl
+       << "help list"<<endl;
+  return true;
+}
 /** open a new cdb file for debugging, WITHOUT loading the firmware to the device
 	all associated files must be in the same directory
 */	
-bool CmdDFile::direct( string cmd)
+bool CmdDFile::direct( string argstr)
 {
+  if(!gSession.target()->is_connected())
+  {
+    cout << "target not connected" << endl;
+    return true;
+  }
+  
+  string cdbfilename = trim(argstr);
+
+  if(access(cdbfilename.c_str(), F_OK ) == -1)
+  {
+    cout <<cdbfilename<<" not exist."<<endl; 
+    return true;
+  }
+
 	gSession.modulemgr()->reset();
 	gSession.symtab()->clear();
 	gSession.symtree()->clear();	
 	gSession.bpmgr()->clear_all();
 
 	CdbFile cdbfile(&gSession);
-	cdbfile.open( cmd+".cdb" );
+	cdbfile.open(cdbfilename);
 	return true;
 }
 
@@ -383,101 +402,190 @@ linespec:
 	filename:function 
 	*address
 */
+
+bool CmdList::set( string cmd )
+{
+  if(cmd.find("size ") != 0)
+  {
+    cout<<"set list size <n>" <<endl;
+    return true;
+  }
+
+  string num = remove_duplicate_space(cmd).substr(5);
+  if(!is_digit(num) || num == "0")
+  {
+    cout<<"Please specify a valid value of listsize" <<endl;
+    return true;
+  }
+
+  this->listsize = atoi(num.c_str());
+  return true;
+}
+
+/*
+List specified function or line.
+With no argument, lists ten more lines after or around previous listing.
+"list -" lists the ten lines before a previous ten-line listing.
+One argument specifies a line, and ten lines are listed around that line.
+Two arguments with comma between specify starting and ending lines to list.
+Lines can be specified in these ways:
+  LINENUM, to list around that line in current file,
+  FILE:LINENUM, to list around that line in that file,
+  FUNCTION, to list around beginning of that function,
+  FILE:FUNCTION, to distinguish among like-named static functions.
+  *ADDRESS, to list around the line containing that address.
+With two args, if one is empty, it stands for ten lines away from
+the other arg.
+
+By default, when a single location is given, display ten lines.
+This can be changed using "set listsize", and the current value
+can be shown using "show listsize".
+*/
+
 bool CmdList::direct( string cmd )
 {
-	cout <<"NOT implemented ["<<cmd<<"]"<<endl;
+  string argstr = trim(cmd);
+  //FIXME: filter out - + *, not supported now.
+  if(argstr == "-" || argstr == "+" || argstr[1] == '*')
+  {
+    printf("not supported\n");
+    return true;
+  }
+  
+  string ls_str = argstr;
+  LineSpec ls(&gSession);
+
+  // if it's a digit number and no current list file.
+  if(is_digit(argstr)) 
+    if(this->current_list_file.filename.empty())
+    {
+      ContextMgr::Context cur_context = gSession.contextmgr()->get_current();
+      ADDR addr;
+      //mode 1 for C, 0 for ASM
+      if( cur_context.mode == 1 )
+        addr = cur_context.addr;
+      else
+        addr = cur_context.asm_addr;
+
+      //convert it to string
+      char addr_str[8];
+      sprintf(addr_str,"*0x%x",addr);
+
+      if(!ls.set(addr_str))
+        return true;
+
+      ls_str=ls.file()+":"+argstr;
+    } else
+      ls_str = this->current_list_file.filename+":"+argstr;
+
+  if(!ls.set(ls_str))
+    return true;
+   
+  cout << ls.file() <<ls.line() <<endl; 
+  this->current_list_file.filename = ls.file();
+  this->current_list_file.linenum = ls.line();
+
+  this->directnoarg();
+
 	return true;
 }
 
 bool CmdList::directnoarg()
 {
-	cout <<"NOT implemented"<<endl;
+  string filename;
+  uint32_t line_num;
+
+  if(!this->current_list_file.filename.empty())
+  {
+    filename = this->current_list_file.filename; 
+    line_num = this->current_list_file.linenum;
+  }
+
+  if(this->current_list_file.filename.empty() || gSession.bpmgr()->is_stopped()) 
+  {
+    gSession.bpmgr()->clear_stopped();
+
+    ContextMgr::Context cur_context = gSession.contextmgr()->get_current();
+
+    ADDR addr;
+    //mode 1 for C, 0 for ASM
+    if( cur_context.mode == 1 )
+      addr = cur_context.addr;
+    else
+      addr = cur_context.asm_addr;
+
+    //convert it to string
+    char addr_str[8];
+    sprintf(addr_str,"*0x%x",addr);
+
+    LineSpec ls(&gSession);
+    
+    if(!ls.set(addr_str))
+      return true;
+
+    filename = ls.file();
+    line_num = ls.line();
+
+    this->current_list_file.filename = filename;
+    this->current_list_file.linenum = line_num;
+  }
+
+  if(line_num == 0)
+    line_num = 1;
+
+  string line ;
+  ifstream file(filename);
+  file.seekg(std::ios::beg);
+  for(int i=0; i < line_num - 1; ++i){
+    file.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+  }
+  
+  int i = line_num;
+  while (!file.fail() && !file.eof() && (i < line_num + this->listsize))
+  {
+    getline(file, line);
+    printf("%4d\t", i);
+    cout << line << endl;
+    i++;
+  }
+
+  if(file.eof())
+  {
+    printf("End of file '%s'\n", filename.c_str());
+  }
+ 
+  file.close();
+
+  // update context.
+  this->current_list_file.filename = filename;
+  this->current_list_file.linenum = i;
+
 	return true;
 }
 
+
+bool CmdList::help(string cmd)
+{
+  cout << "List contents of source file" <<endl
+       << endl
+       << "set list size <N>: display N line one time" <<endl
+       << endl
+       << "list FUNCTION:       list sources from the start of FUNCTION" <<endl
+       << "list FILE:FUNCTION:  list sources from the start of FUNCTION in FILE" <<endl
+       << "list FILE:LINE_NUM:  list sources from the LINE_NUM of FILE" <<endl
+       << "list *ADDR:          list the corresponding sources of ADDR" <<endl
+       << "list:                continue list the current file or the source of current context"<<endl;
+  return true; 
+}
 
 bool CmdPWD::directnoarg()
 {
-	printf("Working directory %s.\n","dir here");	// @TODO replace "dir here with current path"
+  char cwd[PATH_MAX];
+  if (getcwd(cwd, sizeof(cwd)) != NULL)
+    printf("Workding directory '%s'\n", cwd);
 	return true;
 }
 
-
-/** info files and info target are synonymous; both print the current target
-*/
-bool CmdFiles::info( string cmd )
-{
-	cout <<"Symbols from \"/home/ricky/projects/ec2cdb/debug/src/test\"."<<endl;	// @TODO put correct pathe in here
-	return true;
-}
-
-
-bool CmdSource::info( string cmd )
-{
-	if(cmd.length()==0)
-	{
-		cout << "Source files for which symbols have been read in:"<<endl<<endl;
-		cout <<"test.c, test.asm"<<endl;
-		return true;
-	}
-	return false;
-}
-
-bool CmdSources::info( string cmd )
-{
-	if(cmd.length()==0)
-	{
-		cout <<"Current source file is test.c"<<endl;
-		cout <<"Located in test.c"<<endl;
-		cout <<"Contains 11 lines."<<endl;
-		cout <<"Source language is c."<<endl;
-		return true;
-	}
-	return false;
-}
-
-
-/**  	
-	Examples
-
-	(gdb) info line m4_changequote
-	Line 895 of "builtin.c" starts at pc 0x634c and ends at 0x6350.
-	
-	We can also inquire (using *addr as the form for linespec) what source line covers a particular address:
-
-	(gdb) info line *0x63ff
-	Line 926 of "builtin.c" starts at pc 0x63e4 and ends at 0x6404.
-*/
-bool CmdLine::info( string cmd )
-{
-//	if( cmd.find(' ')>=0 || cmd.length()==0 )
-//		return false;	// cmd must be just one word
-	if( cmd.empty() )
-	{
-		/// @FIXME need a current context for this one...
-		return true;
-	}
-	LineSpec ls(&gSession);
-	
-	if( ls.set( cmd ) )
-	{
-		printf("Line %i of \"%s\" starts at pc 0x%04x and ends at 0x%04x.\n",
-				ls.line(),
-				ls.file().c_str(),
-				ls.addr(),
-				ls.end_addr()
-			  );
-		// test.c:19:1:beg:0x000000f8
-		printf("\032\032%s:%i:%i:beg:0x%08x\n",
-			   ls.file().c_str(),
-			   ls.line(),
-			   1,				// what should this be?
-			   ls.addr()
-			  );
-		return true;
-	}
-	return false;
-}
 
 
 extern string prompt;
@@ -496,7 +604,7 @@ bool CmdStop::directnoarg()
 
 bool CmdFinish::directnoarg()
 {
-	cout << "Finishing current function" << endl;
+	cout << "Not implement" << endl;
 	// @fixme set a breakpoint at the end of the current function
 	//bp_mgr.set_breakpoint(
 	return true;
@@ -532,6 +640,11 @@ bool CmdFinish::directnoarg()
 */
 bool CmdPrint::direct( string expr )
 {
+  if(!gSession.target()->is_connected())
+  {
+    return true;
+  }
+
 	string sym_name = expr;
 	char format = 0;
 
@@ -556,15 +669,39 @@ bool CmdPrint::direct( string expr )
 
 	ContextMgr::Context c = gSession.contextmgr()->get_current();
 	if( gSession.symtab()->getSymbol( sym_name, c, it ) )
+  {
 		it->print(format,expr.substr(expr.find(' ')+1));
-	else
+    if( (*it).isFunction() )
+    {
+        printf("function addr = 0x%04x\n", (*it).addr());
+    }
+	} else
 		cout << "No symbol \""<<expr<<"\" in current context."<<endl;
 
 	return true;
 }
 
+bool CmdPrint::help(string cmd)
+{
+  cout << "Print infomation of SYMBOL" <<endl
+       << endl
+       << "print SYMBOL:  print type and addr of SYMBOL" <<endl;
+  return true;
+}
+
+bool CmdRegisters::directnoarg()
+{
+  this->info("");
+  return true;
+}
+
 bool CmdRegisters::info( string cmd )
 {
+  if(!gSession.target()->is_connected())
+  {
+    return true;
+  }
+
 	if( cmd.length()==0 )
 	{
 		/*
@@ -582,7 +719,7 @@ bool CmdRegisters::info( string cmd )
 		uint16_t reg_dptr;
 		gSession.target()->read_sfr(0xd0,1,&reg_psw);
 		reg_bank = (reg_psw>>3)&0x03;
-		printf("PC  : 0x%04x  RegisterBank %i:\n",
+		printf("PC  : 0x%04x\nRegisterBank %i:\n",
 			   gSession.target()->read_PC(), reg_bank );
 		
 		// dump the regs
@@ -610,13 +747,170 @@ bool CmdRegisters::info( string cmd )
 		gSession.target()->read_sfr(0x81,1,&reg_sp);
 		printf("SP  : 0x%02x\n", reg_sp );
 		
-		printf("PSW : 0x%02x | CY : %i | AC : %i | OV : %i | P : %i\n",
+		printf("PSW : 0x%02x |CY:%i|AC:%i|F0:%i|RS1:%i|RS0:%i|OV:%i|--:%i|P:%i|\n",
 			   reg_psw,
 			   (reg_psw>>7)&1,	// CY
 			   (reg_psw>>6)&1,	// AC
+			   (reg_psw>>5)&1,	// F0
+			   (reg_psw>>4)&1,	// RS1
+			   (reg_psw>>3)&1,	// RS0
 			   (reg_psw>>2)&1,	// OV
+			   (reg_psw>>1)&1,	// --
 			   reg_psw&1);		// P
-		return true;
+	}
+	return true;
+}
+
+bool CmdRegisters::help( string cmd )
+{
+  cout << "List important registers and their values" <<endl
+       << endl
+       << "info registers: list PC, RegisterBank, R0-R7, A, B, DPTR, SP, PSW" <<endl;
+  return true;
+}
+
+bool CmdFunctions::info( string cmd )
+{
+  gSession.symtab()->dump_functions();
+  return true;
+}
+
+bool CmdFunctions::help( string cmd )
+{
+  cout << "Dump all functions and it's start/end address" <<endl
+       << endl
+       << "info functions:  dump function infomation" <<endl;
+  return true;
+}
+
+/**  	
+	Examples
+
+	(gdb) info line m4_changequote
+	Line 895 of "builtin.c" starts at pc 0x634c and ends at 0x6350.
+	
+	We can also inquire (using *addr as the form for linespec) what source line covers a particular address:
+
+	(gdb) info line *0x63ff
+	Line 926 of "builtin.c" starts at pc 0x63e4 and ends at 0x6404.
+*/
+
+//TODO, end_addr is always 0x0000
+void linespec_with_str(string str)
+{
+  LineSpec ls(&gSession);
+  if( ls.set( str ) )
+  {
+    // test.c:19
+    printf("\032\032%s:%i\n",
+         ls.file().c_str(),
+         ls.line()
+        );
+  }
+  else
+    printf("No line number information available.\n");
+}
+
+bool CmdLine::info( string cmd )
+{
+  if(!gSession.target()->is_connected())
+  {
+    return true;
+  }
+
+  //FIXME
+  //
+  //when enter breakpoint, 'info line' should show current line.
+  //otherwise, say "No line number information available."
+	if( cmd.empty() )
+	{
+    ADDR addr = gSession.contextmgr()->get_current().addr;
+    char addr_str[8];
+    sprintf(addr_str,"*0x%x",addr);
+    linespec_with_str(addr_str);
+    return true;
+  }
+     
+  linespec_with_str(cmd);
+  return true;
+}
+
+bool CmdLine::help(string cmd)
+{
+  cout << "Show source line information of current context" <<endl
+       << endl
+       << "info line: show source filename and line number" <<endl;
+  return true;
+}
+
+/** info files and info target are synonymous; both print the current target
+*/
+bool CmdFiles::info( string cmd )
+{
+	cout <<"Not implement"<<endl;	// @TODO put correct pathe in here
+	return true;
+}
+
+// get it from symtab
+// main.asm also listed. 
+
+//Current source file is b.c
+//Compilation directory is /home/cjacker
+//Located in /home/cjacker/gdb/b.c
+//Contains 6 lines.
+//Source language is c.
+bool CmdSource::info( string cmd )
+{
+  if( cmd.empty() )
+  {
+    ADDR addr = gSession.contextmgr()->get_current().addr;
+    char addr_str[8];
+    sprintf(addr_str,"*0x%x",addr);
+  
+    LineSpec ls(&gSession);
+    if( ls.set( addr_str ) )
+    {
+      cout <<"Current source file is '"<<ls.file()<<"'"<<endl;       
+    }
+    return true;
+  }
+  return false;
+}
+
+bool CmdSource::help(string cmd)
+{
+  cout << "Show source filename of current context" <<endl
+       << endl
+       << "info source: show source filename of current context" <<endl;
+  return true;
+}
+
+//list all sources
+bool CmdSources::info( string cmd )
+{
+	if(cmd.empty())
+	{
+    vector<string> file_map = gSession.symtab()->get_file_map();
+    
+    int i=0;
+    while( i<file_map.size() )
+    {
+      cout <<file_map[i]<<endl;
+      i++;
+    }
+	  return true;
 	}
 	return false;
 }
+
+bool CmdSources::help(string cmd)
+{
+  cout << "Show source filenames of current project" <<endl
+       << endl
+       << "info sources: show all source filenames of current project" <<endl;
+  return true;
+}
+
+
+
+

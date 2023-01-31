@@ -186,6 +186,7 @@ void Symbol::print( char format )
 		{
 			// print out data now...
 			cout << "type = " << type->name() << endl;
+#if 0
 			// @TODO pass flat memory address to the type so it can reterieve the data and print it out.
 			
 			// @FIXME: need to use the flat addr from remap rather than just the start without an area.
@@ -193,7 +194,11 @@ void Symbol::print( char format )
 			
 			flat_addr = MemRemap::flat( m_start_addr,'d');	// @FIXME remove this hack
 //			cout << type->pretty_print( m_name, indent, flat_addr );
-			cout << type->pretty_print( format,m_name, flat_addr );
+#endif
+      printf("Addr of '%s' = %xh\n",m_name.c_str(), m_start_addr); 
+      //FIXME
+      //disable pretty_print now.
+			 //cout << type->pretty_print( format, m_name, m_start_addr );
 		}
 		else
 		{
