@@ -117,6 +117,8 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.max_ver		= 0x28
 	},
 // toolstick not supported, verified.
+// Feb 1 2023: seems due to libusb_control_transfer?
+// FIXME: update to libusb-1.0 and have a try
 #if 0
 	{
 	.name			= "ToolStick F330 DC",
