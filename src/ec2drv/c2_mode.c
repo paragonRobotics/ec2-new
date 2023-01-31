@@ -1078,6 +1078,7 @@ void c2_write_breakpoints( EC2DRV *obj )
 		( device_in_range( obj->dev, SI1020, SI1021))||
 		( device_in_range( obj->dev, SI1030, SI1031))||
 		( device_in_range( obj->dev, C8051F990, C8051F990))||
+		( device_in_range( obj->dev, EFM8BB22F16G_QFN28, EFM8BB21F16G_QFN20))||
 			device_in_range( obj->dev, C8051F960, C8051F960))
 	{
 		//printf("New method");
