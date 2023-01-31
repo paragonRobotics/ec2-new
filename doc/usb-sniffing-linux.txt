@@ -1,0 +1,69 @@
+USB sniffing for Linux
+============
+
+Since ec2drv is based on captured communications with an EC2 or EC3 if there is a problem with a particular device it is useful if you can provide data captures of the particular device in use with the SimplicityStudio IDE.
+
+If you have an EC3 adapter and want to trace its communications under linux, Please following below steps:
+
+1. load 'usbmon' kernel module
+
+run 'sudo modprobe usbmon'
+
+It will allow you to capture logs of communications between the EC3 / Toolstick and SimplicityStudio.
+
+
+2. get the information of your adapter after plugging in.
+
+run 'lsusb' from terminal, the output looks like:
+
+Bus 001 Device 021: ID 10c4:8044 Silicon Labs USB Debug Adapter
+
+The bus and device information will be used later.
+
+3. capture the communications.
+
+Since the adapter is attached to Bus 1, run:
+sudo su -
+cat /sys/kernel/debug/usb/usbmon/1u
+
+For other bus number, change the '1u' to corresponding name.
+
+You can redirect the output to log files as you need.
+
+4. analyze the log
+Using EFM8BB2 as example, below is part of the log after some operations from Simplicity studio:
+
+"
+ffffa03c0b508840 2467261915 S Io:1:052:2 -115:1 64 = 0120f501 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ffffa03c0b508840 2467262939 C Io:1:052:2 0:1 64 >
+ffffa03aed25a900 2467295883 C Ii:1:052:1 0:1 2 = 010d
+ffffa03a87887c00 2467295914 S Ii:1:052:1 -115:1 64 <
+ffffa03c0b508840 2467295936 S Io:1:052:2 -115:1 64 = 0122f501 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ffffa03c0b508840 2467296936 C Io:1:052:2 0:1 64 >
+ffffa03a87887c00 2467297870 C Ii:1:052:1 0:1 4 = 0332040d
+ffffa03a87887c00 2467297932 S Ii:1:052:1 -115:1 64 <
+ffffa03c0b508840 2467297949 S Io:1:052:2 -115:1 64 = 0123f501 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+ffffa03c0b508840 2467298935 C Io:1:052:2 0:1 64 >
+ffffa03a87887c00 2467299869 C Ii:1:052:1 0:1 4 = 0317030d
+"
+
+'0120'(1 byte '0x20') is to 'connect to target device', '010d'(1 byte '0x0d') is the reply from device.
+'0122' and '0123' are used to get the deviceid and derivid.
+
+"
+ffffa03a1f10b9c0 2500299903 S Io:1:052:2 -115:1 64 = 0429a701 01000000 00000000 00000000 00000000 00000000 00000000 00000000
+ffffa03a1f10b9c0 2500300903 C Io:1:052:2 0:1 64 >
+ffffa038964cf0c0 2500301841 C Ii:1:052:1 0:1 2 = 010d
+ffffa03aed25af00 2500301869 S Ii:1:052:1 -115:1 64 <
+ffffa03a1f10b9c0 2500301885 S Io:1:052:2 -115:1 64 = 04298501 6b000000 00000000 00000000 00000000 00000000 00000000 00000000
+ffffa03a1f10b9c0 2500302908 C Io:1:052:2 0:1 64 >
+ffffa03aed25af00 2500303841 C Ii:1:052:1 0:1 2 = 010d
+"
+
+'0429a701 01' is to write value 1 to SFR_PAGE sfr 
+'04298501 6b' is to write value '0x6b' to addr '0x85'(hidden SFR - BPL[0])
+
+To set a breakpoint, the device need to set SFRPAGE to 1 and write breakpoint address '0x6b' to '0x85' SFR of SFRPAGE 1. then we know the hidden SFR BPL[0] which not exposed in datasheet is '0x85' of SFRPAGE 1.
+
+
+
