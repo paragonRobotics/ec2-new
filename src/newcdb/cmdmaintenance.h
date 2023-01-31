@@ -27,7 +27,7 @@
 
 	@author Ricky White <rickyw@neatstuff.co.nz>
 */
-class CmdMaintenance : public CmdShowSetInfoHelp
+class CmdMaintenance : public CmdTemplate
 {
 public:
 	CmdMaintenance()	{ name="Maintenance"; }

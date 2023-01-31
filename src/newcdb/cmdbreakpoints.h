@@ -25,16 +25,15 @@
 /**
 	@author Ricky White <ricky@localhost.localdomain>
 */
-class CmdBreakpoints : public CmdShowSetInfoHelp
+class CmdBreakpoints : public CmdTemplate
 {
 public:
 	CmdBreakpoints()	{ name="BREAKPoints"; }
-	
-	virtual bool show( string cmd );
+  virtual bool help( string cmd );
 	virtual bool info( string cmd );
 };
 
-class CmdBreak : public CmdShowSetInfoHelp
+class CmdBreak : public CmdTemplate
 {
 public:
 	CmdBreak()	{ name="BReak"; }
@@ -43,7 +42,7 @@ public:
 	virtual bool help( string cmd );
 };
 
-class CmdTBreak : public CmdShowSetInfoHelp
+class CmdTBreak : public CmdTemplate
 {
 	public:
 		CmdTBreak()	{ name="TBreak"; }
@@ -53,33 +52,37 @@ class CmdTBreak : public CmdShowSetInfoHelp
 };
 
 
-class CmdClear : public CmdShowSetInfoHelp
+class CmdClear : public CmdTemplate
 {
 	public:
 		CmdClear()	{ name="CLear"; }
 		virtual bool direct( string cmd );
 		virtual bool directnoarg();
+		virtual bool help( string cmd );
 };
 
-class CmdDelete : public CmdShowSetInfoHelp
+class CmdDelete : public CmdTemplate
 {
 	public:
 		CmdDelete()	{ name="DElete"; }
 		virtual bool direct( string cmd );
+		virtual bool help( string cmd );
 };
 
-class CmdDisable : public CmdShowSetInfoHelp
+class CmdDisable : public CmdTemplate
 {
 	public:
 		CmdDisable()	{ name="DIsable"; }
 		virtual bool direct( string cmd );
+		virtual bool help( string cmd );
 };
 
-class CmdEnable : public CmdShowSetInfoHelp
+class CmdEnable : public CmdTemplate
 {
 	public:
 		CmdEnable()	{ name="ENable"; }
 		virtual bool direct( string cmd );
+		virtual bool help( string cmd );
 };
 
 #endif

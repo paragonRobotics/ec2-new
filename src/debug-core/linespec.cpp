@@ -87,6 +87,8 @@ bool LineSpec::set( string linespec )
 			line_num = strtoul( linespec.substr(ofs+1).c_str(),0,10);
 			spec_type = LINENO;
 			address = mSession->symtab()->get_addr( filename, line_num );
+      /*if(address == -1)
+        return false;*/
 			return true;
 		}
 		else

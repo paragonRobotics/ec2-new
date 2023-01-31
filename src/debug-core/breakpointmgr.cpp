@@ -30,6 +30,7 @@ using namespace std;
 BreakpointMgr::BreakpointMgr( DbgSession *session )
 	: mSession(session)
 {
+  stopflag = false;
 }
 
 
@@ -261,8 +262,12 @@ BP_ID BreakpointMgr::set_breakpoint( string cmd, bool temporary )
 						bplist.push_back(ent);
 						return ent.id;
 					}
-				}
-				return BP_ID_INVALID;
+				} else {
+          printf("Can not set breakpoint at file %s, line %i.\n",
+              ls.file().c_str(),
+              ls.line());
+				  return BP_ID_INVALID;
+        }
 				//return true;	// don't print bad command, was correctly formatted just no addr
 				break;
 			case LineSpec::FUNCTION:
@@ -356,6 +361,7 @@ void BreakpointMgr::stopped( ADDR addr )
 		{
 			// inform user we stopped on a breakpoint
 			cout <<"Stopped on breakpoint #"<<(*it).id<<endl;
+      stopflag = true;
 			if( (*it).bTemp )
 			{
 				// remove temporary breakpoints

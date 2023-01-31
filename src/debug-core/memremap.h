@@ -79,7 +79,7 @@ public:
 			area='i';
 			return flat_addr&0xFF;
 		}
-		else if( flat_addr>=0x80000080 && flat_addr<=0x80000FFF )
+		else if( flat_addr>=0x80000080 && flat_addr<=0x800000FF )
 		{
 			area='s';
 			return flat_addr&0xFF;

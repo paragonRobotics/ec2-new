@@ -34,9 +34,11 @@
 
 #include "cdbfile.h"
 #include "parsecmd.h"
+#include "cmdtarget.h"
 #include "cmdcommon.h"
 #include "cmdbreakpoints.h"
 #include "cmddisassemble.h"
+#include "cmdreadwrite.h"
 #include "cmdmaintenance.h"
 #include "targetsilabs.h"
 #include "targets51.h"
@@ -149,20 +151,22 @@ bool process_cmd_file( string filename )
 
 int main(int argc, char *argv[])
 {
+	cout << "newcdb, new ec2cdb based on c++ source code" << endl;
+
 	void (*old_sig_int_handler)(int);
 
 	old_sig_int_handler = signal( SIGINT, sig_int_handler );
 	atexit(quit);
 //	target = new TargetS51();
 //	target->connect();
+  gSession.SelectTarget("SL51");
+  gSession.target()->set_port("USB");
 
 	CdbFile f(&gSession);
 
 	// add commands to list
-	cmdlist.push_back( new CmdShowSetInfoHelp() );
-	cmdlist.push_back( new CmdVersion() );
-	cmdlist.push_back( new CmdWarranty() );
-	cmdlist.push_back( new CmdCopying() );
+	cmdlist.push_back( new CmdTemplate() );
+	cmdlist.push_back( new CmdTarget() );
 	cmdlist.push_back( new CmdHelp() );
 	cmdlist.push_back( new CmdPrompt() );
 	cmdlist.push_back( new CmdBreakpoints() );
@@ -172,7 +176,6 @@ int main(int argc, char *argv[])
 	cmdlist.push_back( new CmdEnable() );
 	cmdlist.push_back( new CmdDisable() );
 	cmdlist.push_back( new CmdClear() );
-	cmdlist.push_back( new CmdTarget() );
 	cmdlist.push_back( new CmdStep() );
 	cmdlist.push_back( new CmdStepi() );
 	cmdlist.push_back( new CmdNext() );
@@ -186,15 +189,36 @@ int main(int argc, char *argv[])
 	cmdlist.push_back( new CmdSource() );
 	cmdlist.push_back( new CmdSources() );
 	cmdlist.push_back( new CmdLine() );
+	cmdlist.push_back( new CmdFunctions() );
 	cmdlist.push_back( new CmdRun() );
 	cmdlist.push_back( new CmdStop() );
 	cmdlist.push_back( new CmdFinish() );
 	cmdlist.push_back( new CmdDisassemble() );
-	cmdlist.push_back( new CmdX() );
-	cmdlist.push_back( new CmdChange() );
 	cmdlist.push_back( new CmdMaintenance() );
 	cmdlist.push_back( new CmdPrint() );
 	cmdlist.push_back( new CmdRegisters() );
+  //not in parsecmd compare_name, 'c' is for 'continue'
+  //'connect' is also start with 'c', thus put it at end
+  //of cmdlist.
+	cmdlist.push_back( new CmdConnect() );
+	cmdlist.push_back( new CmdDisconnect() );
+	cmdlist.push_back( new CmdReadpc() );
+	cmdlist.push_back( new CmdReadcode() );
+	cmdlist.push_back( new CmdReadxdata() );
+	cmdlist.push_back( new CmdReaddata() );
+	cmdlist.push_back( new CmdReadregister() );
+	cmdlist.push_back( new CmdReadpsfr() );
+	cmdlist.push_back( new CmdReadbit() );
+	cmdlist.push_back( new CmdWritepc() );
+	cmdlist.push_back( new CmdWritexdata() );
+	cmdlist.push_back( new CmdWritedata() );
+	cmdlist.push_back( new CmdWriteregister() );
+	cmdlist.push_back( new CmdWritepsfr() );
+	cmdlist.push_back( new CmdWritebit() );
+	cmdlist.push_back( new CmdReadwrite() );
+	cmdlist.push_back( new CmdControl() );
+	cmdlist.push_back( new CmdInfo() );
+
 	string ln;
 	prompt = "(newcdb) ";
 	FILE *badcmd = 0;
@@ -298,30 +322,25 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
-	if( !quiet_flag )
-	{
-		cout << "newcdb, new ec2cdb based on c++ source code" << endl;
-	}
-
-
 	while(1)
 	{
 		bool ok=false;
 		char *line = readline( prompt.c_str() );
-		if(*line!=0)
-			add_history(line);
+
+    if(line == NULL || strcmp(line, "quit") == 0)
+    {
+      signal( SIGINT, old_sig_int_handler );
+      gSession.target()->disconnect();
+      return 0;
+    }
+
+		add_history(line);
 		ln = line;
 		free(line);
+
 		if(badcmd)
 			fwrite((ln+'\n').c_str(),1,ln.length()+1, badcmd);
-		if( ln.compare("quit")==0 )
-		{
-			signal( SIGINT, old_sig_int_handler );
-			gSession.target()->disconnect();
-			if(badcmd)
-				fclose(badcmd);
-			return 0;
-		}
+
 		ParseCmd::List::iterator it;
 		for( it=cmdlist.begin(); it!=cmdlist.end(); ++it)
 		{

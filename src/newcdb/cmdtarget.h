@@ -17,41 +17,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef CMDSHOW_H
-#define CMDSHOW_H
+#ifndef CMDTARGET_H
+#define CMDTARGET_H
+
 #include "parsecmd.h"
 
 
-/** handle show and set commands
-	@author Ricky White <ricky@localhost.localdomain>
+/**Provide a gateway to communicate with the target driver.
+	for the simulator this allows execution of simulator commands
+	for Si51 isallows resetting the emulator etc
 */
-class CmdShow : public ParseCmd
+
+class CmdTarget : public CmdTemplate
 {
 public:
-    CmdShow();
-    ~CmdShow();
-	virtual bool parse( string cmd );
-
-protected:
-	List cmdlist;
+	CmdTarget()	{ name="Target"; }
+  virtual bool directnoarg();
+	virtual bool direct( string cmd );
+	virtual bool set( string cmd );
+	virtual bool info( string cmd );
+	virtual bool help( string cmd );
 };
 
-class CmdShowVersion : public ParseCmd
+class CmdConnect : public CmdTemplate
 {
 public:
-	virtual bool parse( string cmd );
+  CmdConnect()  { name="Connect"; }
+  virtual bool directnoarg();
 };
 
-class CmdShowCopying : public ParseCmd
+class CmdDisconnect : public CmdTemplate
 {
-	public:
-		virtual bool parse( string cmd );
-};
-
-class CmdShowWarranty : public ParseCmd
-{
-	public:
-		virtual bool parse( string cmd );
+public:
+  CmdDisconnect()  { name="Disconnect"; }
+  virtual bool directnoarg();
 };
 
 #endif
+

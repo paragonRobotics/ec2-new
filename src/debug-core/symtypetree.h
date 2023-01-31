@@ -56,7 +56,11 @@ public:
 	virtual std::string pretty_print( char fmt,
 									  std::string name,
 									  uint32_t &addr )	
-	{ return "not implemented";}
+	{
+    printf("%s 0x%04x\n", name.c_str(), addr);
+    return "";
+    //return "not implemented";
+  }
 	
 protected:
 	DbgSession *mSession;

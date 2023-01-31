@@ -406,8 +406,8 @@ bool CdbFile::parse_linker( string line )
 		case '$':	// fallthrough
 			pos++;			// this seems necessary for local function vars, what about the rest?
 			parse_level_block_addr( line, sym, pos, true );
-//			printf("addr=0x%08x\n",sym.addr());
 			pSym = mSession->symtab()->getSymbol( sym );
+			printf("addr=0x%08x\n",sym.addr());
 			pSym->setAddr(sym.addr());
 //			cout << "??linker record"<<endl;
 //			cout << "\tscope = "<<pSym->scope()<<endl;
