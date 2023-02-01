@@ -636,11 +636,25 @@ bool test_flash( EC2DRV &obj )
 	if( obj.dev->flash_sector_size==512 )
 	{
 		print_subtest("Write / Read chunk Flash, ec2_write_flash_auto_erase (random data)" );
-		// blank arround the sectors in question
-		// affected sectors at 0x200, 0x400
-		memset( write_buf+0x200, 0xff, 1024 );	// mimic what will be read back
+
+    // If the code is not aligned with sector size, still need to erase 
+    // the whole required sector (fill it with 0xFF).
+    //
+    // for example, if the code range is [0x220, 0x220+0x300], it will 
+    // write to the 2nd and 3rd sector(512bytes per sector) but not aligned. 
+    // these two sector need to be erased first.
+    //
+    // Thus, the correct result after 'write with auto erase' should be:
+    // 1. 0x200 to 0x220 should contains 0xFF.
+    // 2. 0x220 to 0x220+0x300 should contains the codes.
+    // 3. 0x520 to 0x600 should contains 0xFF
+
+    // fill the 2nd/3rd sector with 0xFF
+		memset( write_buf+0x200, 0xff, 1024 );
+    // fill some random but not 0xFF codes to 0x220 to 0x220+0x300
 		for( int addr=0x220; addr<0x220+0x300; addr++ )
 			write_buf[addr] = rand()&0x00FF;
+    // write the codes from 0x220 to 0x220+0x300 of write_buf to flash.
 		ec2_write_flash_auto_erase( &obj, write_buf+0x220, 0x220, 0x300 );
 		ec2_read_flash( &obj, read_buf, 0x0000, size );
 		if( memcmp( write_buf, read_buf, size )!=0 )
