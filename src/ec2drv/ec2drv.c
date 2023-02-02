@@ -795,6 +795,37 @@ BOOL ec2_read_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
 	return r;
 }
 
+//ec2_read_flash not suitable for lockbyte since it check the range of addr
+//such as EFM8BB2, the flash user can read/write is 0x0000-0x4000
+//but lockbyte is 0xfbbf and out of the range 0x0000-0x4000
+//unlock:
+//ffff94e86bd7ecc0 1579688771 S Io:1:073:2 -115:1 64 = 042ebffb 01000000 00000000 00000000 00000000 00000000 00000000 00000000
+//ffff94e86bd7ecc0 1579689415 C Io:1:073:2 0:1 64 >                                       ffff94e80524e780 1579690335 C Ii:1:073:1 0:1 3 = 02ff0d
+//ffff94e80524e780 1579690467 S Ii:1:073:1 -115:1 64 <
+//ffff94e86bd7e480 1579690557 S Io:1:073:2 -115:1 64 = 0336a701 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+//ffff94e86bd7e480 1579691416 C Io:1:073:2 0:1 64 >                                       ffff94e80524e780 1579692478 C Ii:1:073:1 0:1 3 = 02000d
+
+//locked:
+//ffff94e8a9543480 820039926 S Io:1:072:2 -115:1 64 = 042ebffb 01000000 00000000 00000000 00000000 00000000 00000000 00000000
+//ffff94e8a9543480 820040901 C Io:1:072:2 0:1 64 >
+//ffff94e809ba2d80 820041721 C Ii:1:072:1 0:1 3 = 020003
+//ffff94e809ba2d80 820041834 S Ii:1:072:1 -115:1 64 <
+//ffff94e8a9543e40 820041933 S Io:1:072:2 -115:1 64 = 0336a701 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+//ffff94e8a9543e40 820042798 C Io:1:072:2 0:1 64 >
+//ffff94e809ba2d80 820043722 C Ii:1:072:1 0:1 3 = 02000d
+BOOL ec2_read_single_lockbyte( EC2DRV *obj, uint8_t *buf, uint32_t lock_addr)
+{
+  DUMP_FUNC();
+  BOOL r = FALSE;
+
+  if( obj->mode==JTAG )
+    r = jtag_read_flash( obj, buf, lock_addr, 1, FALSE );
+  else if( obj->mode==C2 )
+    r = c2_read_flash( obj, buf, lock_addr, 1, FALSE );
+  DUMP_FUNC_END();
+  return r;
+}
+
 
 // These registers for the F120
 SFRREG SFR_SFRPAGE	= { 0x0, 0x84 };
@@ -1377,7 +1408,7 @@ uint8_t flash_lock_byte( EC2DRV *obj )
 	{
 		char buf[5];
 		
-		ec2_read_flash( obj, buf, obj->dev->lock, 1 );
+		ec2_read_single_lockbyte( obj, buf, obj->dev->lock);
 		return buf[0];
 	}
 	else {
