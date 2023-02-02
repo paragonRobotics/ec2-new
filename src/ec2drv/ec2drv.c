@@ -870,6 +870,20 @@ BOOL ec2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len )
 	return r;
 }
 
+//FIXME, is this suitable for every devices?
+BOOL ec2_unlock( EC2DRV *obj)
+{
+  DUMP_FUNC();
+  BOOL r;
+  char buf[1]={0xff};
+  if( obj->mode==C2 )
+    r = c2_write_flash( obj, buf, obj->dev->lock, 1, FALSE );
+  else
+    r = jtag_write_flash( obj, buf, obj->dev->lock, 1 );
+  DUMP_FUNC_END();
+  return r;
+}
+
 
 /** This variant of writing to flash memory (CODE space) will erase sectors
 	before writing.
@@ -899,7 +913,8 @@ BOOL ec2_write_flash_auto_erase( EC2DRV *obj, uint8_t *buf,
 	// check if the flash is locked, in which case we need to do a complete
 	//   flash erase
 	if (flash_lock_byte(obj) != 0xff) {
-		printf("Flash is locked, erasing\n");
+		printf("Flash is locked, unlocking and erasing\n");
+    ec2_unlock(obj);
 		ec2_erase_flash (obj);
 	}
 	// otherwise we can just erase the sectors we will be writing to
