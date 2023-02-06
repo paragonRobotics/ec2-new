@@ -16,6 +16,9 @@ set(NEWCDB_SRC
 	cmdbreakpoints.cpp
 	cmddisassemble.cpp
 	cmdmaintenance.cpp
+	cmdreadwrite.cpp
+	cmdtarget.cpp
+	utils.cpp
 	main.cpp
 )
 
