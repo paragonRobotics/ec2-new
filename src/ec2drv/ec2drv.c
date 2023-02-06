@@ -117,7 +117,7 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.max_ver		= 0x28
 	},
 	{
-	.name			= "ToolStick F330 DC",
+	.name			= "ToolStick", /* EFM8BB1LCK EVB name it as EFM8LCK */
 	.usb_vendor_id	= 0x10c4,
 	.usb_product_id	= 0x8253,
 	.usb_out_endpoint = 0x01,
