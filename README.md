@@ -3,7 +3,7 @@ Linux support for EC2 debugger from Silicon Laboritories
 
 This is a fork from Ricky White's ec2drv (http://ec2drv.sourceforge.net), and has recently merged in lots of fixes from and Andreas Gustafsson, Jonas Danielsson and YanJun Yang.
 
-This package provides several command-line tools for working with the EC2/EC3 debuggers, as well as a command-line debugger which is fairly full-featured.
+This package provides several command-line tools for working with the EC2/EC3 and ToolStick debuggers, as well as a command-line debugger which is fairly full-featured.
 
 ec2tools contain programs that use the core library to perform various actions.
 + ec2test-any - test the opperation of a micro / debugger combination
