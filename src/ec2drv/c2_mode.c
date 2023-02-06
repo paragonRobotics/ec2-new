@@ -136,25 +136,37 @@ void c2_connect_target( EC2DRV *obj )
 {
 	//ffff9fcef0da9180 3542473594 S Co:1:024:0 s 21 09 0341 0000 0002 2 = 4100
 	if(isToolStick(obj)) {
-  		char *ctrlbuf="\x41\x00";
-  		usb_control_msg(obj->ec3, 0x21, 0x09, 0x0341, 0x0000, ctrlbuf, 2, 1000);
+		char *ctrlbuf="\x41\x00";
+		usb_control_msg(obj->ec3,
+		    USB_TYPE_CLASS|USB_RECIP_INTERFACE|USB_ENDPOINT_OUT,
+		    0x09, /* HID set_report */
+		    0x0341, /* (3<<8)|report_id */
+		    0x0000, /* interface */
+		    ctrlbuf, 2, 1000);
 	}
-
 	trx(obj,"\x20",1,"\x0d",1);
 }
 
 void c2_disconnect_target( EC2DRV *obj )
 {
 	trx(obj,"\x21",1,"\x0d",1);
-
 	//ffff9fcf574480c0 2927723477 S Co:1:022:0 s 21 09 0340 0000 0002 2 = 4002
 	//ffff9fcf57448f00 2927724769 S Co:1:022:0 s 21 0a 0000 0000 0000 0
 	if(isToolStick(obj)) {
 		char *ctrlbuf="\x40\x02";
-		usb_control_msg(obj->ec3, 0x21, 0x09, 0x0340, 0x0002, ctrlbuf, 2, 5000);
-		usb_control_msg(obj->ec3, 0x21, 0x0a, 0x0000, 0x0000, NULL, 0, 5000);
+		usb_control_msg(obj->ec3,
+		    USB_TYPE_CLASS|USB_RECIP_INTERFACE|USB_ENDPOINT_OUT,
+		    0x09, /* HID set_report */
+		    0x0340, /* (3<<8)|report_id */
+		    0x0002, /* interface */
+		    ctrlbuf, 2, 1000);
+		usb_control_msg(obj->ec3,
+		    USB_TYPE_CLASS|USB_RECIP_INTERFACE|USB_ENDPOINT_OUT,
+		    0x0a, /* HID set_idle */
+		    0x0000,
+		    0x0000,
+		    NULL, 0, 1000);
 	}
-
 }
 
 
