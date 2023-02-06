@@ -57,7 +57,7 @@ bool CmdHelp::parse( string cmd )
          << "help readwrite:   read/write Rn/SFR/bit and memory address" <<endl
          << "help disassemble: disassemble a speficied section" <<endl
          << "help control:     run/step/continue the program" <<endl
-         << "help info:      query various information" <<endl
+         << "help info:        query various information" <<endl
          << "help file:        load and list files" <<endl
 				 <<endl;
 		return true;
