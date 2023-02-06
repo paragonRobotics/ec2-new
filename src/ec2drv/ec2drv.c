@@ -116,31 +116,6 @@ static DBG_ADAPTER_INFO debugger_info[] =
 	.min_ver		= 0x07,
 	.max_ver		= 0x28
 	},
-// toolstick not supported, verified.
-// Feb 1 2023: seems due to libusb_control_transfer?
-// FIXME: update to libusb-1.0 and have a try
-
-//need to figure out the meaning of line '0380' and '0240'
-/*
-ffff94e8279ae240 2441767091 S Io:1:016:1 -115:1 64 = 03800000 00000000 00000000 00000000 cca158a3 fc7f0000 b0a558a3 fc7f0000
-ffff94e8279ae240 2441768313 C Io:1:016:1 0:1 64 >
-ffff94e8c0bd1840 2441769262 C Ii:1:016:1 0:1 2 = 0100
-ffff94e8c0bd1840 2441769295 S Ii:1:016:1 -115:1 64 <
-ffff94e8279ae840 2441769319 S Co:1:016:0 s 21 09 0341 0000 0002 2 = 4100
-ffff94e8279ae840 2441769470 C Co:1:016:0 0 2 >
-ffff94e8279aec00 2441769553 S Ci:1:016:0 s a1 01 0342 0000 0002 2 <
-ffff94e8279aec00 2441769732 C Ci:1:016:0 0 2 = 4201
-ffff94e8279aec00 2441769817 S Ci:1:016:0 s a1 01 0344 0000 0002 2 <
-ffff94e8279aec00 2441769986 C Ci:1:016:0 0 2 = 4414
-ffff94e8279ae840 2441770052 S Io:1:016:1 -115:1 64 = 02400101 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-ffff94e8279ae840 2441771314 C Io:1:016:1 0:1 64 >
-ffff94e8c0bd1840 2441772221 C Ii:1:016:1 0:1 2 = 010d
-ffff94e8c0bd1840 2441772243 S Ii:1:016:1 -115:1 64 <
-ffff94e8279ae240 2441772261 S Io:1:016:1 -115:1 64 = 0120cd01 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-ffff94e8279ae240 2441773309 C Io:1:016:1 0:1 64 >
-ffff94e8c0bd1840 2441806256 C Ii:1:016:1 0:1 2 = 010d
-*/
-#if 0
 	{
 	.name			= "ToolStick F330 DC",
 	.usb_vendor_id	= 0x10c4,
@@ -149,7 +124,6 @@ ffff94e8c0bd1840 2441806256 C Ii:1:016:1 0:1 2 = 010d
 	.usb_in_endpoint  = 0x81,
 	.has_bootloader	= FALSE,
 	}
-#endif 
 };
 
 
@@ -425,6 +399,10 @@ void ec2_disconnect( EC2DRV *obj )
 			int r;
 	
 			c2_disconnect_target(obj);
+
+			if(isToolStick(obj))
+				return;
+
 			write_usb_ch(obj, 0xff);	// turn off debugger
 			// Read and discard the response. Otherwise it can remain
 			// buffered on the EC3 and be unexpectedly returned to the
@@ -1607,6 +1585,15 @@ BOOL isBPSet( EC2DRV *obj, int bpid )
 {
 	DUMP_FUNC();
 	return (obj->bp_flags >> bpid) & 0x01;
+}
+
+/** check the debugger is ToolStick or NOT
+*/
+BOOL isToolStick(EC2DRV *obj)
+{
+  DUMP_FUNC();
+  return (obj->dbg_info->usb_vendor_id == 0x10c4 &&
+          obj->dbg_info->usb_product_id == 0x8253);
 }
 
 

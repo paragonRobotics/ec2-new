@@ -111,6 +111,7 @@ BOOL ec2_write_firmware( EC2DRV *obj, char *image, uint16_t len,
 
 DBG_ADAPTER_INFO *ec2_GetDbgInfo( uint16_t usb_vendor_id,
 								  uint16_t usb_product_id );
+BOOL isToolStick( EC2DRV *obj);
 
 uint8_t flash_lock_byte( EC2DRV *obj );
 uint8_t flash_read_lock( EC2DRV *obj );

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <usb.h>
 #include "c2_mode.h"
 
 uint8_t c2_special_read( EC2DRV *obj, uint8_t sfr)
@@ -133,12 +134,27 @@ static void flash_write_post( EC2DRV *obj )
 */
 void c2_connect_target( EC2DRV *obj )
 {
+	//ffff9fcef0da9180 3542473594 S Co:1:024:0 s 21 09 0341 0000 0002 2 = 4100
+	if(isToolStick(obj)) {
+  		char *ctrlbuf="\x41\x00";
+  		usb_control_msg(obj->ec3, 0x21, 0x09, 0x0341, 0x0000, ctrlbuf, 2, 1000);
+	}
+
 	trx(obj,"\x20",1,"\x0d",1);
 }
 
 void c2_disconnect_target( EC2DRV *obj )
 {
 	trx(obj,"\x21",1,"\x0d",1);
+
+	//ffff9fcf574480c0 2927723477 S Co:1:022:0 s 21 09 0340 0000 0002 2 = 4002
+	//ffff9fcf57448f00 2927724769 S Co:1:022:0 s 21 0a 0000 0000 0000 0
+	if(isToolStick(obj)) {
+		char *ctrlbuf="\x40\x02";
+		usb_control_msg(obj->ec3, 0x21, 0x09, 0x0340, 0x0002, ctrlbuf, 2, 5000);
+		usb_control_msg(obj->ec3, 0x21, 0x0a, 0x0000, 0x0000, NULL, 0, 5000);
+	}
+
 }
 
 
