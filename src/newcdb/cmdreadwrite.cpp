@@ -45,7 +45,7 @@ bool CmdReadwrite::help(string cmd)
        << "help readpc:             to read value of PC" <<endl
        << "help readbit:            to read value of bits" <<endl
        << "help readregister:       to read values of Rn and SFR registers" <<endl
-       << "help readpsfr:  					to read values of paged SFR" <<endl
+       << "help readpsfr:           to read values of paged SFR" <<endl
        << "help readdata:           to read values of internal data space" <<endl
        << "help readxdata:          to read values of external data space" <<endl
        << "help readcode:           to read values of code space" <<endl

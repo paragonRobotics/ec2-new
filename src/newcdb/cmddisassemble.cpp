@@ -185,8 +185,10 @@ bool CmdDisassemble::help(string cmd)
   cout << "Disassemble a specified section of memory." <<endl
        << endl
        << "disassemble FUNC:  disassemble 'FUNC' function" <<endl
+       << endl
        << "disassemble START_ADDR:" <<endl
        << "- disassemble section from START_ADDR to the end of symbol/function" <<endl
+       << endl
        << "disassemble START_ADDR END_ADDR:" <<endl
        << "- disassemble section from START_ADDR to END_ADDR" <<endl;
   return true;
