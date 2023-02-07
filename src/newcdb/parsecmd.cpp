@@ -21,6 +21,9 @@
 using namespace std;
 #include "types.h"
 #include "parsecmd.h"
+#include "newcdb.h"
+#include "target.h"
+#include "utils.h"
 
 ParseCmd::ParseCmd()
 {
@@ -68,10 +71,22 @@ CmdTemplate::~CmdTemplate()
 {
 }
 
-#include "utils.h"
-
-bool CmdTemplate::parse( string cmd )
+bool CmdTemplate::parse( string cmdstr )
 {
+	string cmd = remove_duplicate_space(trim(cmdstr));
+
+	// only allow run 'help'/'connect'/'set target connect'
+	// cmd if target is not connected.
+	if(!gSession.target()->is_connected() &&
+		cmd.rfind("help", 0) != 0 && // not starts with 'help'
+		cmd != "connect" && 
+		cmd != "set target connect")
+	{
+		cout << "Please connect target first." <<endl
+			 << "run 'help' or 'help target' for usage." <<endl;
+		return true;
+	}
+
 	enum { SET, SHOW, INFO, HELP } mode;
 	int ofs;
 	if( cmd.find("set ")==0 )
@@ -101,7 +116,7 @@ bool CmdTemplate::parse( string cmd )
 		{
 //			cout <<"MATCH + space"<<endl;
 			cmd = cmd.substr( ofs+1 );
-			return direct( trim(cmd) );
+			return direct( cmd );
 		}
 		else
 		{
