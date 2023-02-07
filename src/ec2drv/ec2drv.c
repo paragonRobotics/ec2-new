@@ -1457,7 +1457,9 @@ static BOOL check_flash_range( EC2DRV *obj, uint32_t addr, int len )
 	if ((bottom > (obj->dev->flash_size-1)) ||
 			  (top > (obj->dev->flash_size-1)))
 	{
-		//return FALSE;
+		// hack for EFM8 factory boot loader
+		if(!device_in_range( obj->dev, EFM8BB10F8G_QSOP24, EFM8UB31F40G_QSOP24))
+			return FALSE;
 	}
 	// check if we are writing to the reserved flash portion
 	if (((bottom <= obj->dev->flash_reserved_top) &&
@@ -1465,7 +1467,9 @@ static BOOL check_flash_range( EC2DRV *obj, uint32_t addr, int len )
 		((top <= obj->dev->flash_reserved_top) &&
 		(top >= obj->dev->flash_reserved_bottom)))
 	{
-		//return FALSE;
+		// hack for EFM8 factory boot loader
+		if(!device_in_range( obj->dev, EFM8BB10F8G_QSOP24, EFM8UB31F40G_QSOP24))
+			return FALSE;
 	}
 
 	return TRUE;

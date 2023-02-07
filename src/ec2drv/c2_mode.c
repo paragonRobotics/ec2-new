@@ -380,27 +380,36 @@ BOOL c2_write_flash( EC2DRV *obj, uint8_t *buf, uint32_t start_addr, int len, BO
 
 		// to avoid this hack, the 'ihex loader' must be improved,
 		// and these hack codes should be removed after ihex loader rewritten.
+		
+		if(device_in_range( obj->dev, EFM8BB10F8G_QSOP24, EFM8UB31F40G_QSOP24))
+		{
+			BOOL all_f = TRUE;
 
-		BOOL all_f = TRUE;
-
-		if(addr + l > obj->dev->flash_size-1) {
-			all_f = TRUE;
-			for(int t = 4; t < l+4; t++)
-			{
-				if((uint8_t)cmd[t] != 0xFF) {
-					all_f = FALSE;
-					break;
+			if(addr + l > obj->dev->flash_size-1) {
+				all_f = TRUE;
+				for(int t = 4; t < l+4; t++)
+				{
+					if((uint8_t)cmd[t] != 0xFF) {
+						all_f = FALSE;
+						break;
+					}
 				}
+			} else
+				all_f = FALSE;
+
+			if(!all_f && !trx( obj, cmd, cmd[3]+4, "\x0d", 1 )) {
+				printf("Error happened when write to 0x%04x\n", addr);
+				return FALSE;
 			}
-		} else
-			all_f = FALSE;
-
-		if(!all_f && !trx( obj, cmd, cmd[3]+4, "\x0d", 1 )) {
-			printf("Error happened when write to 0x%04x\n", addr);
-			return FALSE;
+		} // end hack
+		else
+		{
+			if(!trx( obj, cmd, cmd[3]+4, "\x0d", 1 )) 
+			{
+				printf("Error happened when write to 0x%04x\n", addr);
+				return FALSE;
+			}
 		}
-
-		// end hack
 
 		i+=l;
 	}
