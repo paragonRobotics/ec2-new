@@ -1456,14 +1456,17 @@ static BOOL check_flash_range( EC2DRV *obj, uint32_t addr, int len )
 	// is block outside flash area for this device? device flash area ?
 	if ((bottom > (obj->dev->flash_size-1)) ||
 			  (top > (obj->dev->flash_size-1)))
-		return FALSE;
-	
+	{
+		//return FALSE;
+	}
 	// check if we are writing to the reserved flash portion
 	if (((bottom <= obj->dev->flash_reserved_top) &&
 		(bottom >= obj->dev->flash_reserved_bottom)) ||
 		((top <= obj->dev->flash_reserved_top) &&
 		(top >= obj->dev->flash_reserved_bottom)))
-		return FALSE;
+	{
+		//return FALSE;
+	}
 
 	return TRUE;
 }
