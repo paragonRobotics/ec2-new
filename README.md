@@ -3,7 +3,7 @@ Linux support for EC2/EC3 and ToolStick debugger from Silicon Laboritories
 
 This is a fork from Ricky White's ec2drv (http://ec2drv.sourceforge.net), and has recently merged in lots of fixes from and Andreas Gustafsson, Jonas Danielsson, YanJun Yang and Cjacker Huang.
 
-This package provides several command-line tools for working with the EC2/EC3 and ToolStick debuggers, supporting lot of C8051F and EFM8 MCU models, as well as a command-line debugger which is fairly full-featured.
+This package provides several command-line tools for working with the EC2/EC3 and ToolStick debuggers, supporting lot of C8051F and EFM8 parts, as well as a command-line debugger which is fairly full-featured.
 
 ec2tools contain programs that use the core library to perform various actions.
 + ec2test-any - test the opperation of a micro / debugger combination
