@@ -100,26 +100,21 @@ string prompt;
 
 DbgSession gSession;
 
-void sig_int_handler(int)
-{
-	gSession.target()->stop();
-	cout << endl << prompt;
-}
-
-void quit()
+void quit(int)
 {
 	gSession.target()->stop();
 	gSession.target()->disconnect();
+	exit(0);
 }
 
 
 bool parse_cmd( string ln )
 {
-	if( ln.compare("quit")==0 )
+	/*if( ln.compare("quit")==0 )
 	{
-		gSession.target()->disconnect();
+		quit();
 		exit(0);
-	}
+	}*/
 	ParseCmd::List::iterator it;
 	for( it=cmdlist.begin(); it!=cmdlist.end(); ++it)
 	{
@@ -153,14 +148,13 @@ int main(int argc, char *argv[])
 {
 	cout << "newcdb, new ec2cdb based on c++ source code" << endl;
 
-	void (*old_sig_int_handler)(int);
-
-	old_sig_int_handler = signal( SIGINT, sig_int_handler );
-	atexit(quit);
+	// ctrl+c to quit.
+	signal( SIGINT, quit );
+//	atexit(quit);
 //	target = new TargetS51();
 //	target->connect();
-  gSession.SelectTarget("SL51");
-  gSession.target()->set_port("USB");
+	gSession.SelectTarget("SL51");
+	gSession.target()->set_port("USB");
 
 	CdbFile f(&gSession);
 
@@ -197,9 +191,9 @@ int main(int argc, char *argv[])
 	cmdlist.push_back( new CmdMaintenance() );
 	cmdlist.push_back( new CmdPrint() );
 	cmdlist.push_back( new CmdRegisters() );
-  //not in parsecmd compare_name, 'c' is for 'continue'
-  //'connect' is also start with 'c', thus put it at end
-  //of cmdlist.
+	// in parsecmd compare_name, 'c' is for 'continue'
+	// 'connect' is also start with 'c', thus put it at end
+	// of cmdlist.
 	cmdlist.push_back( new CmdConnect() );
 	cmdlist.push_back( new CmdDisconnect() );
 	cmdlist.push_back( new CmdReadpc() );
@@ -326,13 +320,9 @@ int main(int argc, char *argv[])
 	{
 		bool ok=false;
 		char *line = readline( prompt.c_str() );
-
-    if(line == NULL || strcmp(line, "quit") == 0)
-    {
-      signal( SIGINT, old_sig_int_handler );
-      gSession.target()->disconnect();
-      return 0;
-    }
+		//for ctrl+d and quit
+		if(line == NULL || strcmp(line, "quit") == 0)
+			quit(0);
 
 		add_history(line);
 		ln = line;
