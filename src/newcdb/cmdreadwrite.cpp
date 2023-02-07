@@ -127,6 +127,7 @@ bool CmdReadcode::direct(string argstr)
     if(i != 0 && i%8 == 0)
       printf("\n");
   }
+  printf("\n");
 
   free(buffer);
   
@@ -195,6 +196,7 @@ bool CmdReadxdata::direct(string argstr)
     if(i != 0 && i%8 == 0)
       printf("\n");
   }
+  printf("\n");
 
   free(buffer);
   
@@ -264,6 +266,7 @@ bool CmdReaddata::direct(string argstr)
     if(i != 0 && i%8 == 0)
       printf("\n");
   }
+  printf("\n");
 
   free(buffer);
   
