@@ -264,3 +264,7 @@
 "EFM8UB30F40G_QFN20","0x36","0x00",-1,,"0xa000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0x9e00"-1,-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
 "EFM8UB31F40G_QFN24","0x36","0x01",-1,,"0xa000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0x9e00",-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
 "EFM8UB31F40G_QSOP24","0x36","0x02",-1,,"0xa000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0x9e00",-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
+# The DeviceID of EFM8UB2 is 0x28. The DerivativeID is not specified in the datasheet and has been assigned for each package.
+"EFM8UB20F64G_QFN32","0x28","0x00",-1,,"0x10000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0xfa00",-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
+"EFM8UB20F64G_QFP32","0x28","0x01",-1,,"0x10000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0xfa00",-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
+"EFM8UB20F64G_QFP48","0x28","0x02",-1,,"0x10000",512,0,FALSE,FALSE,"FLT_SINGLE",-1,-1,"0xfbff","0xfa00",-1,FALSE,-1,-1,0,FALSE,0,FALSE,"C2",0,"{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}","{0,0}",
