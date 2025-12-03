@@ -1,7 +1,8 @@
-AC_INIT(configure.in)
-
-AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(ec2drv, 0.5)
+AC_INIT([ec2drv], [0.5])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_MACRO_DIRS([m4])
+AM_INIT_AUTOMAKE
 
 
 AC_DEFUN([AX_PYTHON],
@@ -95,21 +96,21 @@ AC_DEFUN([VL_LIB_READLINE], [
 ])dnl
 
 
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AC_PROG_CXX
-AM_PROG_LIBTOOL
+LT_INIT
 AX_PYTHON
 VL_LIB_READLINE
 
-AC_HAVE_LIBRARY(usb,
-				AC_CHECK_LIB(usb,usb_detach_kernel_driver_np,
-							[AC_DEFINE(HAVE_USB_DETACH_KERNEL_DRIVER_NP,1,[Test for Linux only libusb functions])] ),
-				AC_MSG_ERROR([Sorry you do not appear to have libusb available on yor system])
-				)
+AC_CHECK_LIB([usb],[main],[AC_CHECK_LIB(usb,usb_detach_kernel_driver_np,
+							AC_DEFINE(HAVE_USB_DETACH_KERNEL_DRIVER_NP,1,[Test for Linux only libusb functions]) )],[AC_MSG_ERROR(Sorry you do not appear to have libusb available on yor system)
+				],[])ac_cv_lib_usb=ac_cv_lib_usb_main
 
 
 
-AC_OUTPUT(Makefile src/Makefile src/ec2drv/Makefile src/ec2tools/Makefile src/newcdb/Makefile doc/Makefile src/devel-tools/Makefile src/debug-core/Makefile)
+
+AC_CONFIG_FILES([Makefile src/Makefile src/ec2drv/Makefile src/ec2tools/Makefile src/newcdb/Makefile doc/Makefile src/devel-tools/Makefile src/debug-core/Makefile])
+AC_OUTPUT
 
 
 

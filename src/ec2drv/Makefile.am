@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+AM_CPPFLAGS = $(all_includes)
 METASOURCES = AUTO
 
 lib_LTLIBRARIES = libec2drv.la

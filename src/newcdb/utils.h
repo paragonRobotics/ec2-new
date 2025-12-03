@@ -1,5 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
+#include <cstdint>
 #include <string.h>
 
 using namespace std;

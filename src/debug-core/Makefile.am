@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src/ec2drv $(all_includes)
+AM_CPPFLAGS = -I$(top_srcdir)/src/ec2drv $(all_includes)
 METASOURCES = AUTO
 
 lib_LTLIBRARIES = libec2debugcore.la
@@ -11,7 +11,7 @@ libec2debugcore_la_SOURCES =                                                   \
 	dbgsession.cpp outformat.cpp outformat.h contextmgr.cpp contextmgr.h   \
 	breakpointmgr.cpp breakpointmgr.h linespec.cpp target-dummy.cpp
 	
-libec2debugcore_la_LIBADD = $(top_builddir)/src/ec2drv/libec2drv.la -lboost_regex
+libec2debugcore_la_LIBADD = $(top_builddir)/src/ec2drv/libec2drv.la
 noinst_HEADERS = dbgsession.h
 
 ec2debugcore_incdir = @prefix@/include/ec2debug
