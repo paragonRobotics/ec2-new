@@ -301,10 +301,6 @@ void Symbol::print( char format, std::string expr )
 	cout << "expr = '"<< expr << "'" << endl;
 	char msg[] = "Hello World";
 
-//	size_t find_element_end( expr )
-//find_element_end("gfdgsdfg");
-
-	//boost::regex reg_array("^([a-z|0-9|_|-]+)\\x5b([a-z|0-9|_|-]+)\\x5d(.+)");
 	std::regex reg_array("^([a-z|0-9|_|-]+)\\x5b([a-z|0-9|_|-]+)\\x5d(.*)");
 	std::regex reg_child("^([a-z|0-9|_|-]+)\\.(.+)");
 	std::smatch what;

@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src/ec2drv $(all_includes)
+AM_CPPFLAGS = -I$(top_srcdir)/src/ec2drv $(all_includes)
 METASOURCES = AUTO
 
 bin_PROGRAMS = ec2writeflash ec2readflash ec2-update-fw ec2device ec3adapters ec2readfw \
