@@ -63,7 +63,7 @@ public:
 	} ADDR_SPACE;
 	static const char addr_space_map[];
 	
-	void setName( string name )		{ m_name = name;cout <<"{{"<<name<<"}}"<<endl; }
+	void setName( string name )		{ m_name = name; }
 	void setFile( string name )		{ m_file = name; }
 	void setAddr( uint32_t addr );
 	void setEndAddr( uint32_t addr );
