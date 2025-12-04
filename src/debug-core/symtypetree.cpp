@@ -351,7 +351,7 @@ void SymTypeStruct::add_member( std::string member_name,
 	m.type_name		= type_name;
 	m.count			= count;
 	m_members.push_back(m);
-	cout << "adding: member ='"<<member_name<<"', "<<
-			"type = '"<<type_name<<"', "<<
-			" count="<<count<<endl;
+	//cout << "adding: member ='"<<member_name<<"', "<<
+	//		"type = '"<<type_name<<"', "<<
+	//		" count="<<count<<endl;
 }

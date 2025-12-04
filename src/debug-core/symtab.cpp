@@ -324,7 +324,7 @@ bool SymTab::find_asm_file_line( uint16_t addr, string &file, int &line_num )
 bool SymTab::add_c_file_entry( string name, int line_num, int level, int block, uint16_t addr )
 {
 	int fid = file_id(name);
-	cout <<"*** ADDING C FILE '"<<name<<"'"<<endl;
+	//cout <<"*** ADDING C FILE '"<<name<<"'"<<endl;
 	// note add resturns the exsisting module if one exsists.
 	Module &m =
 		mSession->modulemgr()->add_module( name.substr(0, name.length()-2) );	//-".c"
