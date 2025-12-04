@@ -590,7 +590,7 @@ bool CmdReadregister::help(string cmd)
   cout << "Read the values of Rn/SFR registers of current SFR_PAGE(if has)." <<endl
        << "readregister R1 R2 R3 ..." <<endl
        << "- support standard register/SFR names, such as 'R0', 'PSW'" <<endl
-       << "- support register/SFR addr, such as '0x80h'" <<endl
+       << "- support register/SFR addr, such as '0x80' or '80h'" <<endl
        << "- register bank will be considered when reading Rn value" <<endl
        << endl
        << "To read DPTR value, you can use:" <<endl
@@ -609,24 +609,24 @@ bool CmdReadpsfr::direct(string cmd)
 
   vector<string> regv = split(remove_duplicate_space(cmd), ' ');
 
-  if(regv.size() < 2) 
+  if (regv.size() < 2) 
   {
     printf("readpsfr page_number sfr1 sfr2 sfr3 ...\n");
     return true;
   }
 
-  //page number
-	if(!is_hex(regv[0]))
+  // page number
+  if (!is_hex(regv[0]))
   {
-		printf("Please specify sfrpage value as first arg\n");
-    printf("- For sfrpage, please check the datasheet\n");
+    printf("Please specify sfrpage value as first arg, like 0x80 or 80h.\n");
+    printf("- For sfrpage values, please check the datasheet\n");
     return true;
-	}
+  }
   
   long hex = hex_to_num(regv[0]);
-  if(hex > 0xff)
+  if (hex > 0xff)
   {
-    printf("Wrong sfr page number: %s\n", regv[0].c_str());
+    printf("Invalid sfr page number:  %s\n", regv[0].c_str());
     return true;
   }
    
@@ -638,31 +638,31 @@ bool CmdReadpsfr::direct(string cmd)
   {
     // look up reg_map first
     it = reg_map.find(regv[i]);
-    if(it != reg_map.end()) {
+    if (it != reg_map.end()) {
       string reg_name = it->first;
       uint8_t addr = it->second;
       uint8_t value;
-		  gSession.target()->read_sfr(addr, page_number, 1, &value);
+      gSession.target()->read_sfr(addr, page_number, 1, &value);
       printf("%4s(0x%02X)\t= 0x%02X\n", reg_name.c_str(), addr, value);  
     } 
     // for DPTR
     else if (str_icase_equal(regv[i], "dptr")) 
     {
-			uint16_t dptr;
+      uint16_t dptr;
       // DPH
-			uint8_t dph;
+      uint8_t dph;
       gSession.target()->read_sfr((uint8_t)0x83, page_number, 1, &dph);
       // DPL
-			uint8_t dpl;
+      uint8_t dpl;
       gSession.target()->read_sfr((uint8_t)0x82, page_number, 1, &dpl);
 
-			dptr = uint16_t(dph)<<8 | dpl;
+      dptr = uint16_t(dph)<<8 | dpl;
       printf("DPTR(0x83 0x82)\t= 0x%04X\n", dptr);  
     }
     // for addr in hex format.
     else
     {
-      if(!is_hex(regv[i])) {
+      if (!is_hex(regv[i])) {
         printf("%s - Wrong Register address\n", regv[i].c_str());
         continue;
       }
@@ -670,7 +670,7 @@ bool CmdReadpsfr::direct(string cmd)
       long hex = hex_to_num(regv[i]);
 
       //only for paged SFR 
-      if(hex > 0xff || hex < 0x80) {
+      if (hex > 0xff || hex < 0x80) {
         printf("%s - Wrong Register address\n", regv[i].c_str());
         continue;
       }
