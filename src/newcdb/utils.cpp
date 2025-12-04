@@ -11,66 +11,68 @@ bool is_digit(string s)
 {
   // Iterate over string
   int n = s.length();
-  for(int i = 0; i < n; i++)
+  for (int i = 0; i < n; i++)
   {
-    char ch = s[i];
-    // Check if the character
-    // is invalid
-    if (ch < '0' || ch > '9')
+    if (!isdigit(s[i]))
         return false;
   }
   return true;
 }
 
+// A string is considered a hexadecimal encoding if it has:
+//   - A (case insensitive) prefix of '0x' or suffix of 'h', and
+//   - all digits are within the set {[0,9],[A-F]}.
 bool is_hex(string s)
 {
+  bool result = false;
+
   if ((s.rfind("0x", 0) == 0) || (s.rfind("0X", 0) == 0))
-    s.erase(0, 2);
-  else
-    return false;
-
-  int n = s.length();
-
-  if ((s[n-1] == 'h') || (s[n-1] == 'H'))
-    s.pop_back();
-
-  n = s.length();
-
-  // Iterate over string
-  for(int i = 0; i < n; i++)
   {
-    char ch = toupper(s[i]);
-    // Check if the character
-    // is invalid
-    if ((ch < '0' || ch > '9') &&
-        (ch < 'A' || ch > 'F'))
-        return false;
+    result = true;
+    s.erase(0, 2);
   }
-	return true;
+
+  if (toupper(s.back()) == 'H')
+  {
+    result = true;
+    s.pop_back();
+  }
+
+  // Walk each character in s[], checking that they are
+  // within the hex digit set.
+  int n = s.length();
+  for (int i = 0; i < n; i++)
+  {
+    if (!isxdigit(s[i]))
+      return false;
+  }
+
+  return result;
 }
 
-// max 64k
+
 long hex_to_num(string s)
 {
-
   if ((s.rfind("0x", 0) == 0) || (s.rfind("0X", 0) == 0))
     s.erase(0, 2);
 
-  int n = s.length();
-
-  if ((s[n-1] == 'h') || (s[n-1] == 'H'))
+  if (toupper(s.back()) == 'H')
     s.pop_back();
 
-	long val = 0;
-  n = s.length();
-  for(int i = 0; i < n; i++)
+  long val = 0;
+  int n = s.length();
+
+  for (int i = 0; i < n; i++)
   {
     char ch = toupper(s[i]);
-    if(ch >= '0' && ch <= '9') ch = ch-'0';
-    else if (ch >= 'A' && ch <='F') ch = ch - 'A' + 10;    
-    val = (val << 4) | (ch & 0xF);
+    if (ch >= '0' && ch <= '9')
+      ch = ch - '0';
+    else if (ch >= 'A' && ch <= 'F')
+      ch = ch - 'A' + 10;
+    val = (val << 4) | (ch & 0xf);
   }
-  return val; 
+
+  return val;
 }
 
 
@@ -124,4 +126,3 @@ std::string& trim(std::string& s, const char* t)
 {
     return ltrim(rtrim(s, t), t);
 }
-
